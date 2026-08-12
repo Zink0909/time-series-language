@@ -1,0 +1,1715 @@
+{
+ "round": "2024-07-21",
+ "forecast_due_date": "2024-07-21",
+ "sources": [
+  "fred",
+  "yfinance"
+ ],
+ "n_questions": 44,
+ "questions": [
+  {
+   "id": "DTB3",
+   "source": "fred",
+   "question": "Will the Federal Reserve's 3-month secondary market treasury bill rate have increased by {resolution_date} as compared to its value on {forecast_due_date}?",
+   "freeze_value": "5.23",
+   "freeze_explanation": "The latest value released in 3-Month Treasury Bill Secondary Market Rate, Discount Basis from the release H.15 Selected Interest Rates.",
+   "resolution_rows": [
+    {
+     "resolution_date": "2024-07-28",
+     "resolved_to": 0.0,
+     "human_super": 0.3145454545454545,
+     "human_public": null
+    },
+    {
+     "resolution_date": "2024-08-20",
+     "resolved_to": 0.0,
+     "human_super": 0.3009090909090909,
+     "human_public": null
+    },
+    {
+     "resolution_date": "2024-10-19",
+     "resolved_to": 0.0,
+     "human_super": 0.20454545454545456,
+     "human_public": null
+    },
+    {
+     "resolution_date": "2025-01-17",
+     "resolved_to": 0.0,
+     "human_super": 0.1618181818181818,
+     "human_public": null
+    },
+    {
+     "resolution_date": "2025-07-21",
+     "resolved_to": 0.0,
+     "human_super": 0.15818181818181817,
+     "human_public": null
+    }
+   ]
+  },
+  {
+   "id": "TMBACBW027SBOG",
+   "source": "fred",
+   "question": "Will the total dollar amount of mortgage-backed securities held by all US commercial banks have increased by {resolution_date} as compared to its value on {forecast_due_date}?",
+   "freeze_value": "2570.5263",
+   "freeze_explanation": "The latest value released in Treasury and Agency Securities: Mortgage-Backed Securities (MBS), All Commercial Banks from the release H.8 Assets and Liabilities of Commercial Banks in the United States.",
+   "resolution_rows": [
+    {
+     "resolution_date": "2024-07-28",
+     "resolved_to": 0.0,
+     "human_super": 0.5466666666666666,
+     "human_public": null
+    },
+    {
+     "resolution_date": "2024-08-20",
+     "resolved_to": 1.0,
+     "human_super": 0.5883333333333334,
+     "human_public": null
+    },
+    {
+     "resolution_date": "2024-10-19",
+     "resolved_to": 1.0,
+     "human_super": 0.6233333333333334,
+     "human_public": null
+    },
+    {
+     "resolution_date": "2025-01-17",
+     "resolved_to": 1.0,
+     "human_super": 0.6633333333333334,
+     "human_public": null
+    },
+    {
+     "resolution_date": "2025-07-21",
+     "resolved_to": 1.0,
+     "human_super": 0.6983333333333334,
+     "human_public": null
+    }
+   ]
+  },
+  {
+   "id": "EXPINF30YR",
+   "source": "fred",
+   "question": "Will the Federal Reserve Bank of Cleveland's 30-year expected inflation rate have increased by {resolution_date} as compared to its value on {forecast_due_date}?",
+   "freeze_value": "2.46650728",
+   "freeze_explanation": "The latest value released in 30-Year Expected Inflation from the release Inflation Expectations.",
+   "resolution_rows": [
+    {
+     "resolution_date": "2024-08-20",
+     "resolved_to": 0.0,
+     "human_super": 0.3522222222222222,
+     "human_public": null
+    },
+    {
+     "resolution_date": "2024-10-19",
+     "resolved_to": 0.0,
+     "human_super": 0.32666666666666666,
+     "human_public": null
+    },
+    {
+     "resolution_date": "2025-01-17",
+     "resolved_to": 1.0,
+     "human_super": 0.39666666666666667,
+     "human_public": null
+    },
+    {
+     "resolution_date": "2025-07-21",
+     "resolved_to": 0.0,
+     "human_super": 0.4077777777777778,
+     "human_public": null
+    }
+   ]
+  },
+  {
+   "id": "DCOILBRENTEU",
+   "source": "fred",
+   "question": "Will the price of Brent crude oil have increased by {resolution_date} as compared to its value on {forecast_due_date}?",
+   "freeze_value": "87.15",
+   "freeze_explanation": "The latest value released in Crude Oil Prices: Brent - Europe from the release Spot Prices.",
+   "resolution_rows": [
+    {
+     "resolution_date": "2024-07-28",
+     "resolved_to": 0.0,
+     "human_super": 0.4325,
+     "human_public": null
+    },
+    {
+     "resolution_date": "2024-08-20",
+     "resolved_to": 0.0,
+     "human_super": 0.47125000000000006,
+     "human_public": null
+    },
+    {
+     "resolution_date": "2024-10-19",
+     "resolved_to": 0.0,
+     "human_super": 0.48875,
+     "human_public": null
+    },
+    {
+     "resolution_date": "2025-01-17",
+     "resolved_to": 0.0,
+     "human_super": 0.52125,
+     "human_public": null
+    },
+    {
+     "resolution_date": "2025-07-21",
+     "resolved_to": 0.0,
+     "human_super": 0.535,
+     "human_public": null
+    }
+   ]
+  },
+  {
+   "id": "DTB1YR",
+   "source": "fred",
+   "question": "Will the Federal Reserve's 1-year secondary market treasury bill rate have increased by {resolution_date} as compared to its value on {forecast_due_date}?",
+   "freeze_value": "4.76",
+   "freeze_explanation": "The latest value released in 1-Year Treasury Bill Secondary Market Rate, Discount Basis from the release H.15 Selected Interest Rates.",
+   "resolution_rows": [
+    {
+     "resolution_date": "2024-07-28",
+     "resolved_to": 0.0,
+     "human_super": 0.4900000000000001,
+     "human_public": null
+    },
+    {
+     "resolution_date": "2024-08-20",
+     "resolved_to": 0.0,
+     "human_super": 0.45428571428571424,
+     "human_public": null
+    },
+    {
+     "resolution_date": "2024-10-19",
+     "resolved_to": 0.0,
+     "human_super": 0.3885714285714285,
+     "human_public": null
+    },
+    {
+     "resolution_date": "2025-01-17",
+     "resolved_to": 0.0,
+     "human_super": 0.31857142857142856,
+     "human_public": null
+    },
+    {
+     "resolution_date": "2025-07-21",
+     "resolved_to": 0.0,
+     "human_super": 0.31,
+     "human_public": null
+    }
+   ]
+  },
+  {
+   "id": "RRPONTTLD",
+   "source": "fred",
+   "question": "Will the aggregated daily value of securities sold by the Federal Reserve in temporary open market operations have increased by {resolution_date} as compared to its value on {forecast_due_date}?",
+   "freeze_value": "403.708",
+   "freeze_explanation": "The latest value released in Overnight Reverse Repurchase Agreements: Total Securities Sold by the Federal Reserve in the Temporary Open Market Operations from the release Temporary Open Market Operations.",
+   "resolution_rows": [
+    {
+     "resolution_date": "2024-07-28",
+     "resolved_to": 1.0,
+     "human_super": 0.49333333333333335,
+     "human_public": null
+    },
+    {
+     "resolution_date": "2024-08-20",
+     "resolved_to": 0.0,
+     "human_super": 0.455,
+     "human_public": null
+    },
+    {
+     "resolution_date": "2024-10-19",
+     "resolved_to": 0.0,
+     "human_super": 0.43333333333333335,
+     "human_public": null
+    },
+    {
+     "resolution_date": "2025-01-17",
+     "resolved_to": 0.0,
+     "human_super": 0.37833333333333335,
+     "human_public": null
+    },
+    {
+     "resolution_date": "2025-07-21",
+     "resolved_to": 0.0,
+     "human_super": 0.375,
+     "human_public": null
+    }
+   ]
+  },
+  {
+   "id": "SOFRINDEX",
+   "source": "fred",
+   "question": "Will the Federal Reserve's SOFR (Secured Overnight Financing Rate) Index have increased by {resolution_date} as compared to its value on {forecast_due_date}?",
+   "freeze_value": "1.14718519",
+   "freeze_explanation": "The latest value released in SOFR Index from the release SOFR Averages and Index Data.",
+   "resolution_rows": [
+    {
+     "resolution_date": "2024-07-28",
+     "resolved_to": 1.0,
+     "human_super": 0.9877777777777779,
+     "human_public": null
+    },
+    {
+     "resolution_date": "2024-08-20",
+     "resolved_to": 1.0,
+     "human_super": 0.99,
+     "human_public": null
+    },
+    {
+     "resolution_date": "2024-10-19",
+     "resolved_to": 1.0,
+     "human_super": 0.9822222222222222,
+     "human_public": null
+    },
+    {
+     "resolution_date": "2025-01-17",
+     "resolved_to": 1.0,
+     "human_super": 0.9811111111111112,
+     "human_public": null
+    },
+    {
+     "resolution_date": "2025-07-21",
+     "resolved_to": 1.0,
+     "human_super": 0.9777777777777779,
+     "human_public": null
+    }
+   ]
+  },
+  {
+   "id": "DTB4WK",
+   "source": "fred",
+   "question": "Will the Federal Reserve's 4-week secondary market treasury bill rate have increased by {resolution_date} as compared to its value on {forecast_due_date}?",
+   "freeze_value": "5.24",
+   "freeze_explanation": "The latest value released in 4-Week Treasury Bill Secondary Market Rate, Discount Basis from the release H.15 Selected Interest Rates.",
+   "resolution_rows": [
+    {
+     "resolution_date": "2024-07-28",
+     "resolved_to": 0.0,
+     "human_super": 0.47333333333333333,
+     "human_public": null
+    },
+    {
+     "resolution_date": "2024-08-20",
+     "resolved_to": 0.0,
+     "human_super": 0.4716666666666667,
+     "human_public": null
+    },
+    {
+     "resolution_date": "2024-10-19",
+     "resolved_to": 0.0,
+     "human_super": 0.25333333333333335,
+     "human_public": null
+    },
+    {
+     "resolution_date": "2025-01-17",
+     "resolved_to": 0.0,
+     "human_super": 0.15833333333333333,
+     "human_public": null
+    },
+    {
+     "resolution_date": "2025-07-21",
+     "resolved_to": 0.0,
+     "human_super": 0.13333333333333333,
+     "human_public": null
+    }
+   ]
+  },
+  {
+   "id": "WLCFLPCL",
+   "source": "fred",
+   "question": "Will the weekly dollar amount of loans made under the primary credit lending program by the Federal Reserve have increased by {resolution_date} as compared to its value on {forecast_due_date}?",
+   "freeze_value": "6803.0",
+   "freeze_explanation": "The latest value released in Assets: Liquidity and Credit Facilities: Loans: Primary Credit: Wednesday Level from the release H.4.1 Factors Affecting Reserve Balances.",
+   "resolution_rows": [
+    {
+     "resolution_date": "2024-07-28",
+     "resolved_to": 1.0,
+     "human_super": 0.5,
+     "human_public": null
+    },
+    {
+     "resolution_date": "2024-08-20",
+     "resolved_to": 0.0,
+     "human_super": 0.48666666666666664,
+     "human_public": null
+    },
+    {
+     "resolution_date": "2024-10-19",
+     "resolved_to": 0.0,
+     "human_super": 0.47333333333333333,
+     "human_public": null
+    },
+    {
+     "resolution_date": "2025-01-17",
+     "resolved_to": 0.0,
+     "human_super": 0.4533333333333333,
+     "human_public": null
+    },
+    {
+     "resolution_date": "2025-07-21",
+     "resolved_to": 0.0,
+     "human_super": 0.4533333333333333,
+     "human_public": null
+    }
+   ]
+  },
+  {
+   "id": "IHLIDXUS",
+   "source": "fred",
+   "question": "Will the number of US job postings on Indeed have increased by {resolution_date} as compared to its value on {forecast_due_date}?",
+   "freeze_value": "111.72",
+   "freeze_explanation": "The latest value released in Job Postings on Indeed in the United States from the release Job Postings on Indeed.",
+   "resolution_rows": [
+    {
+     "resolution_date": "2024-07-28",
+     "resolved_to": 1.0,
+     "human_super": 0.4628571428571429,
+     "human_public": null
+    },
+    {
+     "resolution_date": "2024-08-20",
+     "resolved_to": 0.0,
+     "human_super": 0.48000000000000004,
+     "human_public": null
+    },
+    {
+     "resolution_date": "2024-10-19",
+     "resolved_to": 0.0,
+     "human_super": 0.46571428571428575,
+     "human_public": null
+    },
+    {
+     "resolution_date": "2025-01-17",
+     "resolved_to": 0.0,
+     "human_super": 0.4842857142857144,
+     "human_public": null
+    },
+    {
+     "resolution_date": "2025-07-21",
+     "resolved_to": 0.0,
+     "human_super": 0.48714285714285716,
+     "human_public": null
+    }
+   ]
+  },
+  {
+   "id": "T10YIE",
+   "source": "fred",
+   "question": "Will the US' 10-year breakeven inflation rate have increased by {resolution_date} as compared to its value on {forecast_due_date}?",
+   "freeze_value": "2.25",
+   "freeze_explanation": "The latest value released in 10-Year Breakeven Inflation Rate from the release Interest Rate Spreads.",
+   "resolution_rows": [
+    {
+     "resolution_date": "2024-07-28",
+     "resolved_to": 0.0,
+     "human_super": 0.5,
+     "human_public": null
+    },
+    {
+     "resolution_date": "2024-08-20",
+     "resolved_to": 0.0,
+     "human_super": 0.495,
+     "human_public": null
+    },
+    {
+     "resolution_date": "2024-10-19",
+     "resolved_to": 0.0,
+     "human_super": 0.48,
+     "human_public": null
+    },
+    {
+     "resolution_date": "2025-01-17",
+     "resolved_to": 1.0,
+     "human_super": 0.475,
+     "human_public": null
+    },
+    {
+     "resolution_date": "2025-07-21",
+     "resolved_to": 1.0,
+     "human_super": 0.475,
+     "human_public": null
+    }
+   ]
+  },
+  {
+   "id": "IUDSOIA",
+   "source": "fred",
+   "question": "Will the daily Sterling Overnight Index Average, the interest rate applied to bank transactions in the British Sterling Market during off hours, have increased by {resolution_date} as compared to its value on {forecast_due_date}?",
+   "freeze_value": "5.2",
+   "freeze_explanation": "The latest value released in Daily Sterling Overnight Index Average (SONIA) Rate from the release SONIA Interest Rate Benchmark.",
+   "resolution_rows": [
+    {
+     "resolution_date": "2024-07-28",
+     "resolved_to": 0.0,
+     "human_super": 0.2928571428571428,
+     "human_public": null
+    },
+    {
+     "resolution_date": "2024-08-20",
+     "resolved_to": 0.0,
+     "human_super": 0.26142857142857145,
+     "human_public": null
+    },
+    {
+     "resolution_date": "2024-10-19",
+     "resolved_to": 0.0,
+     "human_super": 0.22714285714285715,
+     "human_public": null
+    },
+    {
+     "resolution_date": "2025-01-17",
+     "resolved_to": 0.0,
+     "human_super": 0.20714285714285713,
+     "human_public": null
+    },
+    {
+     "resolution_date": "2025-07-21",
+     "resolved_to": 0.0,
+     "human_super": 0.2057142857142857,
+     "human_public": null
+    }
+   ]
+  },
+  {
+   "id": "H41RESPPALDKNWW",
+   "source": "fred",
+   "question": "Will the amount of money loaned as part of the Bank Term Funding Program have increased by {resolution_date} as compared to its value on {forecast_due_date}?",
+   "freeze_value": "105998.0",
+   "freeze_explanation": "The latest value released in Assets: Liquidity and Credit Facilities: Loans: Bank Term Funding Program, Net: Wednesday Level from the release H.4.1 Factors Affecting Reserve Balances.",
+   "resolution_rows": [
+    {
+     "resolution_date": "2024-07-28",
+     "resolved_to": 0.0,
+     "human_super": 0.07666666666666667,
+     "human_public": null
+    },
+    {
+     "resolution_date": "2024-08-20",
+     "resolved_to": 0.0,
+     "human_super": 0.06833333333333333,
+     "human_public": null
+    },
+    {
+     "resolution_date": "2024-10-19",
+     "resolved_to": 0.0,
+     "human_super": 0.06,
+     "human_public": null
+    },
+    {
+     "resolution_date": "2025-01-17",
+     "resolved_to": 0.0,
+     "human_super": 0.05333333333333334,
+     "human_public": null
+    },
+    {
+     "resolution_date": "2025-07-21",
+     "resolved_to": 0.0,
+     "human_super": 0.05833333333333333,
+     "human_public": null
+    }
+   ]
+  },
+  {
+   "id": "NASDAQ100",
+   "source": "fred",
+   "question": "Will the NASDAQ 100 Index, which represents the daily index value at market close, have increased by {resolution_date} as compared to its value on {forecast_due_date}?",
+   "freeze_value": "20675.38",
+   "freeze_explanation": "The latest value released in NASDAQ 100 Index from the release NASDAQ.",
+   "resolution_rows": [
+    {
+     "resolution_date": "2024-07-28",
+     "resolved_to": 0.0,
+     "human_super": 0.519,
+     "human_public": null
+    },
+    {
+     "resolution_date": "2024-08-20",
+     "resolved_to": 1.0,
+     "human_super": 0.5301,
+     "human_public": null
+    },
+    {
+     "resolution_date": "2024-10-19",
+     "resolved_to": 1.0,
+     "human_super": 0.5643,
+     "human_public": null
+    },
+    {
+     "resolution_date": "2025-01-17",
+     "resolved_to": 1.0,
+     "human_super": 0.5946,
+     "human_public": null
+    },
+    {
+     "resolution_date": "2025-07-21",
+     "resolved_to": 1.0,
+     "human_super": 0.6335,
+     "human_public": null
+    }
+   ]
+  },
+  {
+   "id": "DAAA",
+   "source": "fred",
+   "question": "Will Moody's Seasoned Aaa Corporate Bond Yield have increased by {resolution_date} as compared to its value on {forecast_due_date}?",
+   "freeze_value": "5.12",
+   "freeze_explanation": "The latest value released in Moody's Seasoned Aaa Corporate Bond Yield from the release Moody's Daily Corporate Bond Yield Averages.",
+   "resolution_rows": [
+    {
+     "resolution_date": "2024-07-28",
+     "resolved_to": 1.0,
+     "human_super": 0.4966666666666666,
+     "human_public": null
+    },
+    {
+     "resolution_date": "2024-08-20",
+     "resolved_to": 0.0,
+     "human_super": 0.5016666666666666,
+     "human_public": null
+    },
+    {
+     "resolution_date": "2024-10-19",
+     "resolved_to": 0.0,
+     "human_super": 0.5016666666666667,
+     "human_public": null
+    },
+    {
+     "resolution_date": "2025-01-17",
+     "resolved_to": 1.0,
+     "human_super": 0.44999999999999996,
+     "human_public": null
+    },
+    {
+     "resolution_date": "2025-07-21",
+     "resolved_to": 1.0,
+     "human_super": 0.43166666666666664,
+     "human_public": null
+    }
+   ]
+  },
+  {
+   "id": "DPCREDIT",
+   "source": "fred",
+   "question": "Will the discount rate for the Federal Reserve's primary credit discount window program have increased by {resolution_date} as compared to its value on {forecast_due_date}?",
+   "freeze_value": "5.5",
+   "freeze_explanation": "The latest value released in Discount Window Primary Credit Rate from the release H.15 Selected Interest Rates.",
+   "resolution_rows": [
+    {
+     "resolution_date": "2024-07-28",
+     "resolved_to": 0.0,
+     "human_super": 0.017142857142857144,
+     "human_public": null
+    },
+    {
+     "resolution_date": "2024-08-20",
+     "resolved_to": 0.0,
+     "human_super": 0.027142857142857142,
+     "human_public": null
+    },
+    {
+     "resolution_date": "2024-10-19",
+     "resolved_to": 0.0,
+     "human_super": 0.03571428571428572,
+     "human_public": null
+    },
+    {
+     "resolution_date": "2025-01-17",
+     "resolved_to": 0.0,
+     "human_super": 0.045714285714285714,
+     "human_public": null
+    },
+    {
+     "resolution_date": "2025-07-21",
+     "resolved_to": 0.0,
+     "human_super": 0.06,
+     "human_public": null
+    }
+   ]
+  },
+  {
+   "id": "BAMLH0A2HYB",
+   "source": "fred",
+   "question": "Will the option-adjusted spread of securities with an investment grade rating of B in the ICE BofA US High Yield Master II Index, which tracks the performance of corporate debt below investment grade in the US domestic market, have increased by {resolution_date} as compared to its value on {forecast_due_date}?",
+   "freeze_value": "2.95",
+   "freeze_explanation": "The latest value released in ICE BofA Single-B US High Yield Index Option-Adjusted Spread from the release ICE BofA Indices.",
+   "resolution_rows": [
+    {
+     "resolution_date": "2024-07-28",
+     "resolved_to": 1.0,
+     "human_super": 0.466,
+     "human_public": null
+    },
+    {
+     "resolution_date": "2024-08-20",
+     "resolved_to": 1.0,
+     "human_super": 0.45999999999999996,
+     "human_public": null
+    },
+    {
+     "resolution_date": "2024-10-19",
+     "resolved_to": 0.0,
+     "human_super": 0.446,
+     "human_public": null
+    },
+    {
+     "resolution_date": "2025-01-17",
+     "resolved_to": 0.0,
+     "human_super": 0.48600000000000004,
+     "human_public": null
+    },
+    {
+     "resolution_date": "2025-07-21",
+     "resolved_to": 1.0,
+     "human_super": 0.52,
+     "human_public": null
+    }
+   ]
+  },
+  {
+   "id": "ECBDFR",
+   "source": "fred",
+   "question": "Will the European Central Bank's deposit facility rate for the euro area have increased by {resolution_date} as compared to its value on {forecast_due_date}?",
+   "freeze_value": "3.75",
+   "freeze_explanation": "The latest value released in ECB Deposit Facility Rate for Euro Area from the release Key ECB Interest Rates.",
+   "resolution_rows": [
+    {
+     "resolution_date": "2024-07-28",
+     "resolved_to": 0.0,
+     "human_super": 0.0025,
+     "human_public": null
+    },
+    {
+     "resolution_date": "2024-08-20",
+     "resolved_to": 0.0,
+     "human_super": 0.0025,
+     "human_public": null
+    },
+    {
+     "resolution_date": "2024-10-19",
+     "resolved_to": 0.0,
+     "human_super": 0.03125000000000001,
+     "human_public": null
+    },
+    {
+     "resolution_date": "2025-01-17",
+     "resolved_to": 0.0,
+     "human_super": 0.06875,
+     "human_public": null
+    },
+    {
+     "resolution_date": "2025-07-21",
+     "resolved_to": 0.0,
+     "human_super": 0.09625,
+     "human_public": null
+    }
+   ]
+  },
+  {
+   "id": "DFII10",
+   "source": "fred",
+   "question": "Will the market yield on US treasury securities at 10-year constant maturity, quoted on an investment basis and inflation-indexed, have increased by {resolution_date} as compared to its value on {forecast_due_date}?",
+   "freeze_value": "2.01",
+   "freeze_explanation": "The latest value released in Market Yield on U.S. Treasury Securities at 10-Year Constant Maturity, Quoted on an Investment Basis, Inflation-Indexed from the release H.15 Selected Interest Rates.",
+   "resolution_rows": [
+    {
+     "resolution_date": "2024-07-28",
+     "resolved_to": 0.0,
+     "human_super": 0.4726714285714286,
+     "human_public": null
+    },
+    {
+     "resolution_date": "2024-08-20",
+     "resolved_to": 0.0,
+     "human_super": 0.4564142857142858,
+     "human_public": null
+    },
+    {
+     "resolution_date": "2024-10-19",
+     "resolved_to": 0.0,
+     "human_super": 0.4413571428571429,
+     "human_public": null
+    },
+    {
+     "resolution_date": "2025-01-17",
+     "resolved_to": 1.0,
+     "human_super": 0.38,
+     "human_public": null
+    },
+    {
+     "resolution_date": "2025-07-21",
+     "resolved_to": 1.0,
+     "human_super": 0.35571428571428576,
+     "human_public": null
+    }
+   ]
+  },
+  {
+   "id": "BAMLCC0A0CMTRIV",
+   "source": "fred",
+   "question": "Will the total return of the ICE BofA US Corporate Index, which tracks the performance of corporate debt issued in the US domestic market, have increased by {resolution_date} as compared to its value on {forecast_due_date}?",
+   "freeze_value": "3271.46",
+   "freeze_explanation": "The latest value released in ICE BofA US Corporate Index Total Return Index Value from the release ICE BofA Indices.",
+   "resolution_rows": [
+    {
+     "resolution_date": "2024-07-28",
+     "resolved_to": 1.0,
+     "human_super": 0.544,
+     "human_public": null
+    },
+    {
+     "resolution_date": "2024-08-20",
+     "resolved_to": 1.0,
+     "human_super": 0.572,
+     "human_public": null
+    },
+    {
+     "resolution_date": "2024-10-19",
+     "resolved_to": 1.0,
+     "human_super": 0.5980000000000001,
+     "human_public": null
+    },
+    {
+     "resolution_date": "2025-01-17",
+     "resolved_to": 1.0,
+     "human_super": 0.6059999999999999,
+     "human_public": null
+    },
+    {
+     "resolution_date": "2025-07-21",
+     "resolved_to": 1.0,
+     "human_super": 0.614,
+     "human_public": null
+    }
+   ]
+  },
+  {
+   "id": "REAINTRATREARAT10Y",
+   "source": "fred",
+   "question": "Will the Federal Reserve Bank of Cleveland's estimate for the 10-year real interest rate have increased by {resolution_date} as compared to its value on {forecast_due_date}?",
+   "freeze_value": "2.05050865",
+   "freeze_explanation": "The latest value released in 10-Year Real Interest Rate from the release Inflation Expectations.",
+   "resolution_rows": [
+    {
+     "resolution_date": "2024-08-20",
+     "resolved_to": 0.0,
+     "human_super": 0.3675,
+     "human_public": null
+    },
+    {
+     "resolution_date": "2024-10-19",
+     "resolved_to": 0.0,
+     "human_super": 0.3625,
+     "human_public": null
+    },
+    {
+     "resolution_date": "2025-01-17",
+     "resolved_to": 1.0,
+     "human_super": 0.37250000000000005,
+     "human_public": null
+    },
+    {
+     "resolution_date": "2025-07-21",
+     "resolved_to": 0.0,
+     "human_super": 0.38249999999999995,
+     "human_public": null
+    }
+   ]
+  },
+  {
+   "id": "DPSACBW027SBOG",
+   "source": "fred",
+   "question": "Will the amount of money representing deposits in all US commercial banks have increased by {resolution_date} as compared to its value on {forecast_due_date}?",
+   "freeze_value": "17594.2769",
+   "freeze_explanation": "The latest value released in Deposits, All Commercial Banks from the release H.8 Assets and Liabilities of Commercial Banks in the United States.",
+   "resolution_rows": [
+    {
+     "resolution_date": "2024-07-28",
+     "resolved_to": 1.0,
+     "human_super": 0.4685714285714285,
+     "human_public": null
+    },
+    {
+     "resolution_date": "2024-08-20",
+     "resolved_to": 1.0,
+     "human_super": 0.5214285714285715,
+     "human_public": null
+    },
+    {
+     "resolution_date": "2024-10-19",
+     "resolved_to": 1.0,
+     "human_super": 0.5792857142857143,
+     "human_public": null
+    },
+    {
+     "resolution_date": "2025-01-17",
+     "resolved_to": 1.0,
+     "human_super": 0.6271428571428571,
+     "human_public": null
+    },
+    {
+     "resolution_date": "2025-07-21",
+     "resolved_to": 1.0,
+     "human_super": 0.6885714285714286,
+     "human_public": null
+    }
+   ]
+  },
+  {
+   "id": "CTAS",
+   "source": "yfinance",
+   "question": "Will CTAS's market close price on {resolution_date} be higher than its market close price on {forecast_due_date}?\n\nStock splits and reverse splits will be accounted for in resolving this question. Forecasts on questions about companies that have been delisted (through mergers or bankruptcy) will resolve to their final close price.",
+   "freeze_value": "715.88",
+   "freeze_explanation": "The latest market close price of CTAS.",
+   "resolution_rows": [
+    {
+     "resolution_date": "2024-07-28",
+     "resolved_to": 1.0,
+     "human_super": 0.5199999999999999,
+     "human_public": null
+    },
+    {
+     "resolution_date": "2024-08-20",
+     "resolved_to": 1.0,
+     "human_super": 0.5385714285714285,
+     "human_public": null
+    },
+    {
+     "resolution_date": "2024-10-19",
+     "resolved_to": 1.0,
+     "human_super": 0.5514285714285714,
+     "human_public": null
+    },
+    {
+     "resolution_date": "2025-01-17",
+     "resolved_to": 1.0,
+     "human_super": 0.5528571428571429,
+     "human_public": null
+    },
+    {
+     "resolution_date": "2025-07-21",
+     "resolved_to": 1.0,
+     "human_super": 0.5714285714285714,
+     "human_public": null
+    }
+   ]
+  },
+  {
+   "id": "TSCO",
+   "source": "yfinance",
+   "question": "Will TSCO's market close price on {resolution_date} be higher than its market close price on {forecast_due_date}?\n\nStock splits and reverse splits will be accounted for in resolving this question. Forecasts on questions about companies that have been delisted (through mergers or bankruptcy) will resolve to their final close price.",
+   "freeze_value": "262.82",
+   "freeze_explanation": "The latest market close price of TSCO.",
+   "resolution_rows": [
+    {
+     "resolution_date": "2024-07-28",
+     "resolved_to": 0.0,
+     "human_super": 0.4928571428571429,
+     "human_public": null
+    },
+    {
+     "resolution_date": "2024-08-20",
+     "resolved_to": 0.0,
+     "human_super": 0.51,
+     "human_public": null
+    },
+    {
+     "resolution_date": "2024-10-19",
+     "resolved_to": 1.0,
+     "human_super": 0.5171428571428571,
+     "human_public": null
+    },
+    {
+     "resolution_date": "2025-01-17",
+     "resolved_to": 0.0,
+     "human_super": 0.5514285714285715,
+     "human_public": null
+    },
+    {
+     "resolution_date": "2025-07-21",
+     "resolved_to": 1.0,
+     "human_super": 0.5571428571428572,
+     "human_public": null
+    }
+   ]
+  },
+  {
+   "id": "FANG",
+   "source": "yfinance",
+   "question": "Will FANG's market close price on {resolution_date} be higher than its market close price on {forecast_due_date}?\n\nStock splits and reverse splits will be accounted for in resolving this question. Forecasts on questions about companies that have been delisted (through mergers or bankruptcy) will resolve to their final close price.",
+   "freeze_value": "207.17",
+   "freeze_explanation": "The latest market close price of FANG.",
+   "resolution_rows": [
+    {
+     "resolution_date": "2024-07-28",
+     "resolved_to": 0.0,
+     "human_super": 0.53,
+     "human_public": null
+    },
+    {
+     "resolution_date": "2024-08-20",
+     "resolved_to": 0.0,
+     "human_super": 0.538,
+     "human_public": null
+    },
+    {
+     "resolution_date": "2024-10-19",
+     "resolved_to": 0.0,
+     "human_super": 0.568,
+     "human_public": null
+    },
+    {
+     "resolution_date": "2025-01-17",
+     "resolved_to": 0.0,
+     "human_super": 0.5780000000000001,
+     "human_public": null
+    },
+    {
+     "resolution_date": "2025-07-21",
+     "resolved_to": 0.0,
+     "human_super": 0.55,
+     "human_public": null
+    }
+   ]
+  },
+  {
+   "id": "DECK",
+   "source": "yfinance",
+   "question": "Will DECK's market close price on {resolution_date} be higher than its market close price on {forecast_due_date}?\n\nStock splits and reverse splits will be accounted for in resolving this question. Forecasts on questions about companies that have been delisted (through mergers or bankruptcy) will resolve to their final close price.",
+   "freeze_value": "888.64",
+   "freeze_explanation": "The latest market close price of DECK.",
+   "resolution_rows": [
+    {
+     "resolution_date": "2024-07-28",
+     "resolved_to": 1.0,
+     "human_super": 0.496,
+     "human_public": null
+    },
+    {
+     "resolution_date": "2024-08-20",
+     "resolved_to": 1.0,
+     "human_super": 0.52,
+     "human_public": null
+    },
+    {
+     "resolution_date": "2024-10-19",
+     "resolved_to": 1.0,
+     "human_super": 0.514,
+     "human_public": null
+    },
+    {
+     "resolution_date": "2025-01-17",
+     "resolved_to": 1.0,
+     "human_super": 0.488,
+     "human_public": null
+    },
+    {
+     "resolution_date": "2025-07-21",
+     "resolved_to": 0.0,
+     "human_super": 0.4780000000000001,
+     "human_public": null
+    }
+   ]
+  },
+  {
+   "id": "T",
+   "source": "yfinance",
+   "question": "Will T's market close price on {resolution_date} be higher than its market close price on {forecast_due_date}?\n\nStock splits and reverse splits will be accounted for in resolving this question. Forecasts on questions about companies that have been delisted (through mergers or bankruptcy) will resolve to their final close price.",
+   "freeze_value": "18.86",
+   "freeze_explanation": "The latest market close price of T.",
+   "resolution_rows": [
+    {
+     "resolution_date": "2024-07-28",
+     "resolved_to": 0.0,
+     "human_super": 0.5072142857142857,
+     "human_public": null
+    },
+    {
+     "resolution_date": "2024-08-20",
+     "resolved_to": 1.0,
+     "human_super": 0.5094285714285715,
+     "human_public": null
+    },
+    {
+     "resolution_date": "2024-10-19",
+     "resolved_to": 1.0,
+     "human_super": 0.5131142857142857,
+     "human_public": null
+    },
+    {
+     "resolution_date": "2025-01-17",
+     "resolved_to": 1.0,
+     "human_super": 0.5061428571428571,
+     "human_public": null
+    },
+    {
+     "resolution_date": "2025-07-21",
+     "resolved_to": 1.0,
+     "human_super": 0.5125428571428572,
+     "human_public": null
+    }
+   ]
+  },
+  {
+   "id": "AXON",
+   "source": "yfinance",
+   "question": "Will AXON's market close price on {resolution_date} be higher than its market close price on {forecast_due_date}?\n\nStock splits and reverse splits will be accounted for in resolving this question. Forecasts on questions about companies that have been delisted (through mergers or bankruptcy) will resolve to their final close price.",
+   "freeze_value": "291.16",
+   "freeze_explanation": "The latest market close price of AXON.",
+   "resolution_rows": [
+    {
+     "resolution_date": "2024-07-28",
+     "resolved_to": 1.0,
+     "human_super": 0.4942857142857143,
+     "human_public": null
+    },
+    {
+     "resolution_date": "2024-08-20",
+     "resolved_to": 1.0,
+     "human_super": 0.4985714285714286,
+     "human_public": null
+    },
+    {
+     "resolution_date": "2024-10-19",
+     "resolved_to": 1.0,
+     "human_super": 0.52,
+     "human_public": null
+    },
+    {
+     "resolution_date": "2025-01-17",
+     "resolved_to": 1.0,
+     "human_super": 0.5314285714285715,
+     "human_public": null
+    },
+    {
+     "resolution_date": "2025-07-21",
+     "resolved_to": 1.0,
+     "human_super": 0.5414285714285715,
+     "human_public": null
+    }
+   ]
+  },
+  {
+   "id": "SNA",
+   "source": "yfinance",
+   "question": "Will SNA's market close price on {resolution_date} be higher than its market close price on {forecast_due_date}?\n\nStock splits and reverse splits will be accounted for in resolving this question. Forecasts on questions about companies that have been delisted (through mergers or bankruptcy) will resolve to their final close price.",
+   "freeze_value": "267.9",
+   "freeze_explanation": "The latest market close price of SNA.",
+   "resolution_rows": [
+    {
+     "resolution_date": "2024-07-28",
+     "resolved_to": 1.0,
+     "human_super": 0.5183333333333334,
+     "human_public": null
+    },
+    {
+     "resolution_date": "2024-08-20",
+     "resolved_to": 1.0,
+     "human_super": 0.5383333333333332,
+     "human_public": null
+    },
+    {
+     "resolution_date": "2024-10-19",
+     "resolved_to": 1.0,
+     "human_super": 0.55,
+     "human_public": null
+    },
+    {
+     "resolution_date": "2025-01-17",
+     "resolved_to": 1.0,
+     "human_super": 0.5516666666666666,
+     "human_public": null
+    },
+    {
+     "resolution_date": "2025-07-21",
+     "resolved_to": 1.0,
+     "human_super": 0.54,
+     "human_public": null
+    }
+   ]
+  },
+  {
+   "id": "GLW",
+   "source": "yfinance",
+   "question": "Will GLW's market close price on {resolution_date} be higher than its market close price on {forecast_due_date}?\n\nStock splits and reverse splits will be accounted for in resolving this question. Forecasts on questions about companies that have been delisted (through mergers or bankruptcy) will resolve to their final close price.",
+   "freeze_value": "45.05",
+   "freeze_explanation": "The latest market close price of GLW.",
+   "resolution_rows": [
+    {
+     "resolution_date": "2024-07-28",
+     "resolved_to": 0.0,
+     "human_super": 0.5066666666666667,
+     "human_public": null
+    },
+    {
+     "resolution_date": "2024-08-20",
+     "resolved_to": 0.0,
+     "human_super": 0.5016666666666666,
+     "human_public": null
+    },
+    {
+     "resolution_date": "2024-10-19",
+     "resolved_to": 1.0,
+     "human_super": 0.5033333333333334,
+     "human_public": null
+    },
+    {
+     "resolution_date": "2025-01-17",
+     "resolved_to": 1.0,
+     "human_super": 0.5266666666666666,
+     "human_public": null
+    },
+    {
+     "resolution_date": "2025-07-21",
+     "resolved_to": 1.0,
+     "human_super": 0.57,
+     "human_public": null
+    }
+   ]
+  },
+  {
+   "id": "WYNN",
+   "source": "yfinance",
+   "question": "Will WYNN's market close price on {resolution_date} be higher than its market close price on {forecast_due_date}?\n\nStock splits and reverse splits will be accounted for in resolving this question. Forecasts on questions about companies that have been delisted (through mergers or bankruptcy) will resolve to their final close price.",
+   "freeze_value": "84.61",
+   "freeze_explanation": "The latest market close price of WYNN.",
+   "resolution_rows": [
+    {
+     "resolution_date": "2024-07-28",
+     "resolved_to": 0.0,
+     "human_super": 0.4414285714285714,
+     "human_public": null
+    },
+    {
+     "resolution_date": "2024-08-20",
+     "resolved_to": 0.0,
+     "human_super": 0.45142857142857146,
+     "human_public": null
+    },
+    {
+     "resolution_date": "2024-10-19",
+     "resolved_to": 1.0,
+     "human_super": 0.4514285714285714,
+     "human_public": null
+    },
+    {
+     "resolution_date": "2025-01-17",
+     "resolved_to": 1.0,
+     "human_super": 0.47285714285714286,
+     "human_public": null
+    },
+    {
+     "resolution_date": "2025-07-21",
+     "resolved_to": 1.0,
+     "human_super": 0.5071428571428572,
+     "human_public": null
+    }
+   ]
+  },
+  {
+   "id": "KHC",
+   "source": "yfinance",
+   "question": "Will KHC's market close price on {resolution_date} be higher than its market close price on {forecast_due_date}?\n\nStock splits and reverse splits will be accounted for in resolving this question. Forecasts on questions about companies that have been delisted (through mergers or bankruptcy) will resolve to their final close price.",
+   "freeze_value": "32.18",
+   "freeze_explanation": "The latest market close price of KHC.",
+   "resolution_rows": [
+    {
+     "resolution_date": "2024-07-28",
+     "resolved_to": 1.0,
+     "human_super": 0.445,
+     "human_public": null
+    },
+    {
+     "resolution_date": "2024-08-20",
+     "resolved_to": 1.0,
+     "human_super": 0.45999999999999996,
+     "human_public": null
+    },
+    {
+     "resolution_date": "2024-10-19",
+     "resolved_to": 1.0,
+     "human_super": 0.49666666666666665,
+     "human_public": null
+    },
+    {
+     "resolution_date": "2025-01-17",
+     "resolved_to": 0.0,
+     "human_super": 0.5766666666666667,
+     "human_public": null
+    },
+    {
+     "resolution_date": "2025-07-21",
+     "resolved_to": 0.0,
+     "human_super": 0.6,
+     "human_public": null
+    }
+   ]
+  },
+  {
+   "id": "LULU",
+   "source": "yfinance",
+   "question": "Will LULU's market close price on {resolution_date} be higher than its market close price on {forecast_due_date}?\n\nStock splits and reverse splits will be accounted for in resolving this question. Forecasts on questions about companies that have been delisted (through mergers or bankruptcy) will resolve to their final close price.",
+   "freeze_value": "289.2",
+   "freeze_explanation": "The latest market close price of LULU.",
+   "resolution_rows": [
+    {
+     "resolution_date": "2024-07-28",
+     "resolved_to": 0.0,
+     "human_super": 0.48,
+     "human_public": null
+    },
+    {
+     "resolution_date": "2024-08-20",
+     "resolved_to": 0.0,
+     "human_super": 0.492,
+     "human_public": null
+    },
+    {
+     "resolution_date": "2024-10-19",
+     "resolved_to": 1.0,
+     "human_super": 0.5,
+     "human_public": null
+    },
+    {
+     "resolution_date": "2025-01-17",
+     "resolved_to": 1.0,
+     "human_super": 0.512,
+     "human_public": null
+    },
+    {
+     "resolution_date": "2025-07-21",
+     "resolved_to": 0.0,
+     "human_super": 0.526,
+     "human_public": null
+    }
+   ]
+  },
+  {
+   "id": "KMB",
+   "source": "yfinance",
+   "question": "Will KMB's market close price on {resolution_date} be higher than its market close price on {forecast_due_date}?\n\nStock splits and reverse splits will be accounted for in resolving this question. Forecasts on questions about companies that have been delisted (through mergers or bankruptcy) will resolve to their final close price.",
+   "freeze_value": "141.02",
+   "freeze_explanation": "The latest market close price of KMB.",
+   "resolution_rows": [
+    {
+     "resolution_date": "2024-07-28",
+     "resolved_to": 0.0,
+     "human_super": 0.5125,
+     "human_public": null
+    },
+    {
+     "resolution_date": "2024-08-20",
+     "resolved_to": 1.0,
+     "human_super": 0.52,
+     "human_public": null
+    },
+    {
+     "resolution_date": "2024-10-19",
+     "resolved_to": 1.0,
+     "human_super": 0.5225,
+     "human_public": null
+    },
+    {
+     "resolution_date": "2025-01-17",
+     "resolved_to": 0.0,
+     "human_super": 0.49250000000000005,
+     "human_public": null
+    },
+    {
+     "resolution_date": "2025-07-21",
+     "resolved_to": 0.0,
+     "human_super": 0.505,
+     "human_public": null
+    }
+   ]
+  },
+  {
+   "id": "SOLV",
+   "source": "yfinance",
+   "question": "Will SOLV's market close price on {resolution_date} be higher than its market close price on {forecast_due_date}?\n\nStock splits and reverse splits will be accounted for in resolving this question. Forecasts on questions about companies that have been delisted (through mergers or bankruptcy) will resolve to their final close price.",
+   "freeze_value": "49.36",
+   "freeze_explanation": "The latest market close price of SOLV.",
+   "resolution_rows": [
+    {
+     "resolution_date": "2024-07-28",
+     "resolved_to": 1.0,
+     "human_super": 0.5025,
+     "human_public": null
+    },
+    {
+     "resolution_date": "2024-08-20",
+     "resolved_to": 1.0,
+     "human_super": 0.4975,
+     "human_public": null
+    },
+    {
+     "resolution_date": "2024-10-19",
+     "resolved_to": 1.0,
+     "human_super": 0.5025,
+     "human_public": null
+    },
+    {
+     "resolution_date": "2025-01-17",
+     "resolved_to": 1.0,
+     "human_super": 0.5025,
+     "human_public": null
+    },
+    {
+     "resolution_date": "2025-07-21",
+     "resolved_to": 1.0,
+     "human_super": 0.515,
+     "human_public": null
+    }
+   ]
+  },
+  {
+   "id": "DAY",
+   "source": "yfinance",
+   "question": "Will DAY's market close price on {resolution_date} be higher than its market close price on {forecast_due_date}?\n\nStock splits and reverse splits will be accounted for in resolving this question. Forecasts on questions about companies that have been delisted (through mergers or bankruptcy) will resolve to their final close price.",
+   "freeze_value": "51.04",
+   "freeze_explanation": "The latest market close price of DAY.",
+   "resolution_rows": [
+    {
+     "resolution_date": "2024-07-28",
+     "resolved_to": 0.0,
+     "human_super": 0.434,
+     "human_public": null
+    },
+    {
+     "resolution_date": "2024-08-20",
+     "resolved_to": 1.0,
+     "human_super": 0.43600000000000005,
+     "human_public": null
+    },
+    {
+     "resolution_date": "2024-10-19",
+     "resolved_to": 1.0,
+     "human_super": 0.438,
+     "human_public": null
+    },
+    {
+     "resolution_date": "2025-01-17",
+     "resolved_to": 1.0,
+     "human_super": 0.4,
+     "human_public": null
+    },
+    {
+     "resolution_date": "2025-07-21",
+     "resolved_to": 1.0,
+     "human_super": 0.47000000000000003,
+     "human_public": null
+    }
+   ]
+  },
+  {
+   "id": "CZR",
+   "source": "yfinance",
+   "question": "Will CZR's market close price on {resolution_date} be higher than its market close price on {forecast_due_date}?\n\nStock splits and reverse splits will be accounted for in resolving this question. Forecasts on questions about companies that have been delisted (through mergers or bankruptcy) will resolve to their final close price.",
+   "freeze_value": "38.96",
+   "freeze_explanation": "The latest market close price of CZR.",
+   "resolution_rows": [
+    {
+     "resolution_date": "2024-07-28",
+     "resolved_to": 0.0,
+     "human_super": 0.49684,
+     "human_public": null
+    },
+    {
+     "resolution_date": "2024-08-20",
+     "resolved_to": 0.0,
+     "human_super": 0.51036,
+     "human_public": null
+    },
+    {
+     "resolution_date": "2024-10-19",
+     "resolved_to": 1.0,
+     "human_super": 0.50726,
+     "human_public": null
+    },
+    {
+     "resolution_date": "2025-01-17",
+     "resolved_to": 0.0,
+     "human_super": 0.52598,
+     "human_public": null
+    },
+    {
+     "resolution_date": "2025-07-21",
+     "resolved_to": 0.0,
+     "human_super": 0.5461,
+     "human_public": null
+    }
+   ]
+  },
+  {
+   "id": "RJF",
+   "source": "yfinance",
+   "question": "Will RJF's market close price on {resolution_date} be higher than its market close price on {forecast_due_date}?\n\nStock splits and reverse splits will be accounted for in resolving this question. Forecasts on questions about companies that have been delisted (through mergers or bankruptcy) will resolve to their final close price.",
+   "freeze_value": "120.7",
+   "freeze_explanation": "The latest market close price of RJF.",
+   "resolution_rows": [
+    {
+     "resolution_date": "2024-07-28",
+     "resolved_to": 1.0,
+     "human_super": 0.44800000000000006,
+     "human_public": null
+    },
+    {
+     "resolution_date": "2024-08-20",
+     "resolved_to": 1.0,
+     "human_super": 0.446,
+     "human_public": null
+    },
+    {
+     "resolution_date": "2024-10-19",
+     "resolved_to": 1.0,
+     "human_super": 0.466,
+     "human_public": null
+    },
+    {
+     "resolution_date": "2025-01-17",
+     "resolved_to": 1.0,
+     "human_super": 0.48600000000000004,
+     "human_public": null
+    },
+    {
+     "resolution_date": "2025-07-21",
+     "resolved_to": 1.0,
+     "human_super": 0.51,
+     "human_public": null
+    }
+   ]
+  },
+  {
+   "id": "CLX",
+   "source": "yfinance",
+   "question": "Will CLX's market close price on {resolution_date} be higher than its market close price on {forecast_due_date}?\n\nStock splits and reverse splits will be accounted for in resolving this question. Forecasts on questions about companies that have been delisted (through mergers or bankruptcy) will resolve to their final close price.",
+   "freeze_value": "134.84",
+   "freeze_explanation": "The latest market close price of CLX.",
+   "resolution_rows": [
+    {
+     "resolution_date": "2024-07-28",
+     "resolved_to": 0.0,
+     "human_super": 0.49000000000000005,
+     "human_public": null
+    },
+    {
+     "resolution_date": "2024-08-20",
+     "resolved_to": 1.0,
+     "human_super": 0.48,
+     "human_public": null
+    },
+    {
+     "resolution_date": "2024-10-19",
+     "resolved_to": 1.0,
+     "human_super": 0.4816666666666667,
+     "human_public": null
+    },
+    {
+     "resolution_date": "2025-01-17",
+     "resolved_to": 1.0,
+     "human_super": 0.47666666666666674,
+     "human_public": null
+    },
+    {
+     "resolution_date": "2025-07-21",
+     "resolved_to": 0.0,
+     "human_super": 0.49833333333333335,
+     "human_public": null
+    }
+   ]
+  },
+  {
+   "id": "HUM",
+   "source": "yfinance",
+   "question": "Will HUM's market close price on {resolution_date} be higher than its market close price on {forecast_due_date}?\n\nStock splits and reverse splits will be accounted for in resolving this question. Forecasts on questions about companies that have been delisted (through mergers or bankruptcy) will resolve to their final close price.",
+   "freeze_value": "379.73",
+   "freeze_explanation": "The latest market close price of HUM.",
+   "resolution_rows": [
+    {
+     "resolution_date": "2024-07-28",
+     "resolved_to": 1.0,
+     "human_super": 0.54928,
+     "human_public": null
+    },
+    {
+     "resolution_date": "2024-08-20",
+     "resolved_to": 0.0,
+     "human_super": 0.54474,
+     "human_public": null
+    },
+    {
+     "resolution_date": "2024-10-19",
+     "resolved_to": 0.0,
+     "human_super": 0.5577799999999999,
+     "human_public": null
+    },
+    {
+     "resolution_date": "2025-01-17",
+     "resolved_to": 0.0,
+     "human_super": 0.5828000000000001,
+     "human_public": null
+    },
+    {
+     "resolution_date": "2025-07-21",
+     "resolved_to": 0.0,
+     "human_super": 0.62716,
+     "human_public": null
+    }
+   ]
+  },
+  {
+   "id": "CBRE",
+   "source": "yfinance",
+   "question": "Will CBRE's market close price on {resolution_date} be higher than its market close price on {forecast_due_date}?\n\nStock splits and reverse splits will be accounted for in resolving this question. Forecasts on questions about companies that have been delisted (through mergers or bankruptcy) will resolve to their final close price.",
+   "freeze_value": "93.12",
+   "freeze_explanation": "The latest market close price of CBRE.",
+   "resolution_rows": [
+    {
+     "resolution_date": "2024-07-28",
+     "resolved_to": 1.0,
+     "human_super": 0.42857142857142855,
+     "human_public": null
+    },
+    {
+     "resolution_date": "2024-08-20",
+     "resolved_to": 1.0,
+     "human_super": 0.43714285714285717,
+     "human_public": null
+    },
+    {
+     "resolution_date": "2024-10-19",
+     "resolved_to": 1.0,
+     "human_super": 0.46285714285714297,
+     "human_public": null
+    },
+    {
+     "resolution_date": "2025-01-17",
+     "resolved_to": 1.0,
+     "human_super": 0.48571428571428565,
+     "human_public": null
+    },
+    {
+     "resolution_date": "2025-07-21",
+     "resolved_to": 1.0,
+     "human_super": 0.54,
+     "human_public": null
+    }
+   ]
+  },
+  {
+   "id": "TPR",
+   "source": "yfinance",
+   "question": "Will TPR's market close price on {resolution_date} be higher than its market close price on {forecast_due_date}?\n\nStock splits and reverse splits will be accounted for in resolving this question. Forecasts on questions about companies that have been delisted (through mergers or bankruptcy) will resolve to their final close price.",
+   "freeze_value": "43.48",
+   "freeze_explanation": "The latest market close price of TPR.",
+   "resolution_rows": [
+    {
+     "resolution_date": "2024-07-28",
+     "resolved_to": 0.0,
+     "human_super": 0.51,
+     "human_public": null
+    },
+    {
+     "resolution_date": "2024-08-20",
+     "resolved_to": 0.0,
+     "human_super": 0.514,
+     "human_public": null
+    },
+    {
+     "resolution_date": "2024-10-19",
+     "resolved_to": 1.0,
+     "human_super": 0.528,
+     "human_public": null
+    },
+    {
+     "resolution_date": "2025-01-17",
+     "resolved_to": 1.0,
+     "human_super": 0.54,
+     "human_public": null
+    },
+    {
+     "resolution_date": "2025-07-21",
+     "resolved_to": 1.0,
+     "human_super": 0.5599999999999999,
+     "human_public": null
+    }
+   ]
+  },
+  {
+   "id": "CCL",
+   "source": "yfinance",
+   "question": "Will CCL's market close price on {resolution_date} be higher than its market close price on {forecast_due_date}?\n\nStock splits and reverse splits will be accounted for in resolving this question. Forecasts on questions about companies that have been delisted (through mergers or bankruptcy) will resolve to their final close price.",
+   "freeze_value": "18.12",
+   "freeze_explanation": "The latest market close price of CCL.",
+   "resolution_rows": [
+    {
+     "resolution_date": "2024-07-28",
+     "resolved_to": 0.0,
+     "human_super": 0.5153,
+     "human_public": null
+    },
+    {
+     "resolution_date": "2024-08-20",
+     "resolved_to": 0.0,
+     "human_super": 0.5218,
+     "human_public": null
+    },
+    {
+     "resolution_date": "2024-10-19",
+     "resolved_to": 1.0,
+     "human_super": 0.5258833333333334,
+     "human_public": null
+    },
+    {
+     "resolution_date": "2025-01-17",
+     "resolved_to": 1.0,
+     "human_super": 0.5332666666666667,
+     "human_public": null
+    },
+    {
+     "resolution_date": "2025-07-21",
+     "resolved_to": 1.0,
+     "human_super": 0.5583333333333333,
+     "human_public": null
+    }
+   ]
+  },
+  {
+   "id": "FFIV",
+   "source": "yfinance",
+   "question": "Will FFIV's market close price on {resolution_date} be higher than its market close price on {forecast_due_date}?\n\nStock splits and reverse splits will be accounted for in resolving this question. Forecasts on questions about companies that have been delisted (through mergers or bankruptcy) will resolve to their final close price.",
+   "freeze_value": "173.59",
+   "freeze_explanation": "The latest market close price of FFIV.",
+   "resolution_rows": [
+    {
+     "resolution_date": "2024-07-28",
+     "resolved_to": 1.0,
+     "human_super": 0.5025,
+     "human_public": null
+    },
+    {
+     "resolution_date": "2024-08-20",
+     "resolved_to": 1.0,
+     "human_super": 0.51275,
+     "human_public": null
+    },
+    {
+     "resolution_date": "2024-10-19",
+     "resolved_to": 1.0,
+     "human_super": 0.518,
+     "human_public": null
+    },
+    {
+     "resolution_date": "2025-01-17",
+     "resolved_to": 1.0,
+     "human_super": 0.536,
+     "human_public": null
+    },
+    {
+     "resolution_date": "2025-07-21",
+     "resolved_to": 1.0,
+     "human_super": 0.56,
+     "human_public": null
+    }
+   ]
+  }
+ ]
+}

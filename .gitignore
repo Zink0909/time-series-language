@@ -1,0 +1,39 @@
+# Time-Series & Language — .gitignore
+# Push = code + docs + small samples.
+# Never push = caches, built data, backups, team-internal material, secrets.
+# NOTE: git has no inline comments — every comment is on its own line.
+
+# secrets / team-internal (NEVER push)
+discord_exports/
+CLAUDE.md
+**/CLAUDE.md
+*.env
+service_account*.json
+*credentials*.json
+
+# large caches / raw downloads (regenerable)
+**/raw/
+**/.cache/
+references/
+
+# built data & big artifacts (regenerable from code)
+out/
+**/_*.json
+*.jsonl.bak
+
+# local reports / notes (not for the public repo)
+reports/
+notion_pages/
+dev_set_review/
+
+# backups & scratch (local only)
+scratchpad/
+**/scratchpad/
+
+# python / os cruft
+__pycache__/
+*.py[cod]
+.DS_Store
+.ipynb_checkpoints/
+.venv/
+venv/

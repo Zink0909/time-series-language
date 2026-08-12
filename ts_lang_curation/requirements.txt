@@ -1,0 +1,11 @@
+# pip install -r requirements.txt   (Python 3.11)
+#
+# Runtime: the pipeline itself only needs the OpenAI client — it calls the team's
+# OpenAI-compatible vLLM API (Qwen 35B-a3b on :8003 / Gemma 31B on :8004) for the
+# grounded ts->text generation. Everything else is the Python standard library.
+openai>=2.0
+
+# Utilities (not required to run the pipeline) — for reading the team's reference
+# catalogs when triaging / inspecting sources:
+python-docx>=1.0      # references/*.docx
+openpyxl>=3.1         # references/source-catalogs/*.xlsx

@@ -1,0 +1,13 @@
+# Reproduce the project env:  micromamba create -f environment.yml   (or conda env create -f …)
+# The env lives in micromamba's central store (~/micromamba/envs/ts-language), not here —
+# this file is the declarative spec so the project is self-contained / reproducible.
+name: ts-language
+channels:
+  - conda-forge
+dependencies:
+  - python=3.11
+  - pip
+  - pip:
+      - openai>=2.0          # talks to the team's vLLM API (OpenAI-compatible: Qwen a3b / Gemma)
+      - python-docx>=1.0     # read references/*.docx (Data Schema, source catalog)
+      - openpyxl>=3.1        # read references/source-catalogs/*.xlsx (Defu's live sheet)
