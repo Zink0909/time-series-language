@@ -42,6 +42,12 @@ Stage ② is a **3-arm test** — **A** no-text / **B** correct-text / **C** shu
 permuted onto the wrong series). A real gain needs **B to beat both A and C**: beating A but not C
 means the gain is the *channel*, not the *content*.
 
+**Shared framework & format bridge** (for merging two producers' data). The curation framework is
+one shared `core/` + one thin adapter per source — see [`ts_lang_curation/FRAMEWORK.md`](./ts_lang_curation/FRAMEWORK.md).
+Data can live in either the ChatML or the instruction-free CPT form; `flywheel/companion/verify_any.py`
+verifies **both** through one gate, and `chatml_to_cpt.py` / `cpt_to_chatml.py` convert between them
+(CPT is the canonical form).
+
 **Discipline.** Independent audits (`flywheel/audit_*.py`) re-derive quality from the spec rather
 than trusting the builder's own `validate()`; the leakage cutoff (`knowledge_time` < forecast
 origin) is enforced in code and audited per record; everything is reproducible under a minimum
