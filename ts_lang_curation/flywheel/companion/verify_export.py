@@ -16,7 +16,7 @@ then on the box:
       --gen-test timemmd --seeds 3 --epochs 6 --embedder-device cuda:0
 and read the "held-out" block (baseline vs A vs B) = the ID verdict.
 """
-import os, sys, json
+import argparse, os, sys, json
 HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, os.path.dirname(os.path.dirname(HERE)))
 sys.path.insert(0, HERE)
@@ -29,22 +29,30 @@ def _pack(x):
 
 
 def main():
-    src = sys.argv[1]
-    frac = float(sys.argv[2]) if len(sys.argv) > 2 else 0.8
+    ap = argparse.ArgumentParser()
+    ap.add_argument("source")
+    ap.add_argument("train_frac", type=float, nargs="?", default=0.8)
+    ap.add_argument("--group-disjoint", action="store_true")
+    a = ap.parse_args()
+    src, frac = a.source, a.train_frac
     items = [x for x in data.load(datasets=[src], flywheel_only=False) if x["origin"]]
     items.sort(key=lambda x: x["origin"])
     n = len(items)
     if n < 20:
         print(f"WARNING {src}: only {n} forecast items — verification will be noisy")
     cutoff = items[int(n * frac)]["origin"]
-    train = [x for x in items if x["origin"] < cutoff]
-    test = [x for x in items if x["origin"] >= cutoff]
-    # leakage check: every train origin strictly before cutoff <= every test origin
-    assert (not train or max(x["origin"] for x in train) < cutoff) and \
-           (not test or min(x["origin"] for x in test) >= cutoff), "time split leak"
-    tr = arms.make_arms(train)
+    train, test, problems = data.time_split(items, cutoff, group_disjoint=a.group_disjoint)
+    assert not problems, "; ".join(problems[:10])
+    if len(train) < 2:
+        raise ValueError("split leaves fewer than two training rows; cannot build shuffled control")
+    tr = arms.make_arms(train, strata=("dataset",))
     export = {
         "source": src, "cutoff": cutoff, "n_train": len(train), "n_test": len(test),
+        "split_policy": ("temporal_entity_disjoint" if a.group_disjoint
+                         else "temporal_same_entity_allowed"),
+        "group_overlap": len({x["series_group"] for x in train} &
+                             {x["series_group"] for x in test}),
+        "shuffle_policy": "within_dataset_strict_derangement",
         "train": {"A_no_text": [_pack(x) for x in tr["A_no_text"]],
                   "B_flywheel": [_pack(x) for x in tr["B_flywheel_text"]],
                   "C_shuffled": [_pack(x) for x in tr["C_shuffled_text"]]},

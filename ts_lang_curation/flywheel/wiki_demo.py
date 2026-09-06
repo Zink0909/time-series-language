@@ -186,7 +186,7 @@ def _flat_context(hist):
 # ---------- S8 · build ----------
 def pairs_and_trace(refresh=False):
     meta = json.load(open(META))
-    recs, trace = [], []
+    examples, trace = [], []
     for slug in sorted(meta):
         m = meta[slug]
         title, canon, ev = m.get("title", ""), m.get("canonical", ""), m.get("event_date", "")
@@ -235,25 +235,24 @@ def pairs_and_trace(refresh=False):
                                           start=_shift(ev, -PRE), end=_shift(ev, POST))},
             text_source="wikipedia_lead_pit", is_generated="real",
             knowledge_time=rev["timestamp"])
-        rec = build_record(ex)
-        errs = validate(rec)
-        if errs:
-            t["reason"] = f"schema_invalid: {errs}"
-            continue
-        recs.append(rec)
+        examples.append(ex)
         t.update({"emitted": True, "revision_timestamp": rev["timestamp"],
                   "rev_age_days": (dt.datetime.strptime(info["spike_date"], "%Y-%m-%d")
                                    - dt.datetime.strptime(rev["timestamp"][:10], "%Y-%m-%d")).days,
                   "flat_context": flat, "hist_len": len(hist), "fut_len": len(fut),
                   "lead_preview": rev["lead"][:160]})
-    return recs, trace
+    return examples, trace
 
 
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--refresh", action="store_true", help="re-fetch pageviews + revisions (else cache)")
     a = ap.parse_args()
-    recs, trace = pairs_and_trace(a.refresh)
+    examples, trace = pairs_and_trace(a.refresh)
+    recs = [build_record(example) for example in examples]
+    invalid = [validate(record) for record in recs if validate(record)]
+    if invalid:
+        raise ValueError(f"canonical flywheel examples emitted invalid ChatML: {invalid[:3]}")
     n = write_jsonl(recs, OUT)
     json.dump(trace, open(TRACE, "w"), indent=1, ensure_ascii=False)
     emitted = sum(1 for t in trace if t["emitted"])

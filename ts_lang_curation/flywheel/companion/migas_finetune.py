@@ -23,7 +23,7 @@ Metric = median MASE on the held-out flywheel test AND the Time-MMD generalizati
 
   python flywheel/companion/migas_finetune.py --migas-dir /path/to/synthefy-migas [--epochs 5]
 """
-import os, sys, json, argparse, statistics as st, random
+import os, sys, json, argparse, datetime, hashlib, statistics as st, random, tempfile
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 FINETUNE = os.path.join(HERE, "_finetune_export.json")     # train A/B/C + held-out test (our data)
@@ -59,10 +59,59 @@ def load_timemmd(H=10, F=5):
     return load_gen(TIMEMMD, H, F)
 
 
+def _sha256(path):
+    if not path or not os.path.exists(path):
+        return None
+    h = hashlib.sha256()
+    with open(path, "rb") as f:
+        for block in iter(lambda: f.read(1024 * 1024), b""):
+            h.update(block)
+    return h.hexdigest()
+
+
+def _write_json_atomic(value, path):
+    directory = os.path.dirname(os.path.abspath(path))
+    os.makedirs(directory, exist_ok=True)
+    fd, tmp = tempfile.mkstemp(prefix=".experiment-", suffix=".tmp", dir=directory)
+    try:
+        with os.fdopen(fd, "w", encoding="utf-8") as f:
+            json.dump(value, f, ensure_ascii=False, indent=2, sort_keys=True)
+            f.write("\n")
+            f.flush(); os.fsync(f.fileno())
+        os.replace(tmp, path)
+    except BaseException:
+        try:
+            os.unlink(tmp)
+        except FileNotFoundError:
+            pass
+        raise
+
+
 def mase(pred, actual, hist):
     scale = st.mean(abs(hist[i] - hist[i - 1]) for i in range(1, len(hist))) or 1e-6
     n = min(len(pred), len(actual))
     return st.mean(abs(pred[i] - actual[i]) for i in range(n)) / scale
+
+
+def bootstrap_median_delta(deltas, events, iters=3000, seed=0):
+    """Cluster bootstrap by persistent series/entity; repeated events are not independent rows."""
+    groups = {}
+    for i, event in enumerate(events):
+        group = (event.get("series_group") or event.get("series_id") or event.get("id")
+                 or f"event-{i}")
+        groups.setdefault(group, []).append(deltas[i])
+    keys = list(groups)
+    if not keys:
+        raise ValueError("cannot bootstrap an empty evaluation set")
+    rng = random.Random(seed)
+    medians = []
+    for _ in range(iters):
+        sample = []
+        for _ in keys:
+            sample.extend(groups[keys[rng.randrange(len(keys))]])
+        medians.append(st.median(sample))
+    medians.sort()
+    return st.median(deltas), medians[int(.025 * iters)], medians[int(.975 * iters)], len(keys)
 
 
 def summaries_of(ev):
@@ -108,15 +157,15 @@ def _trainable(model):
     return params
 
 
-def _forward_batch(model, batch, device):
-    """One forward over a list of examples -> forecast tensor (B, F). Feeds raw history + summaries."""
+def _forward_batch(model, batch, device, use_text=True):
+    """One forward over context-normalized examples. Text can be disabled for arm A."""
     import torch                                                      # noqa
     B = len(batch)
     F = len(batch[0]["future"])
     x = torch.tensor([e["history"] for e in batch], dtype=torch.float32, device=device)
     hmean = torch.tensor([st.mean(e["history"]) for e in batch], dtype=torch.float32)
     hstd = torch.tensor([st.pstdev(e["history"]) or 1.0 for e in batch], dtype=torch.float32)
-    fp = [summaries_of(e) for e in batch]
+    fp = [summaries_of(e) if use_text else ("", "") for e in batch]
     summaries = [f"FACTUAL SUMMARY:\n{fa}\n\nPREDICTIVE SIGNALS:\n{pr}" for fa, pr in fp]
     text = [[s] for s in summaries]                                   # per-sample text (fallback if no summaries)
     forecast, ts_forecast, _ = model(x, text=text, pred_len=model.pred_len, history_mean=hmean,
@@ -125,11 +174,8 @@ def _forward_batch(model, batch, device):
 
 
 def train_arm(model, train_examples, arm, epochs, lr, bs, device, eval_fn=None):
-    """Fine-tune the fusion on one arm. arm 'A_no_text' trains nothing extra (report the base); 'B'/'C'
-    train the fusion on correct/shuffled summaries. eval_fn(model, epoch) runs after each epoch."""
+    """Fine-tune the same fusion stack for every arm; only conditioning text differs."""
     import torch                                                      # noqa
-    if arm == "A_no_text":
-        return model                                                 # A = frozen base, no text fusion
     params = _trainable(model)
     opt = torch.optim.AdamW(params, lr=lr)
     lossf = torch.nn.functional.l1_loss
@@ -140,10 +186,10 @@ def train_arm(model, train_examples, arm, epochs, lr, bs, device, eval_fn=None):
         for i in range(0, len(train_examples), bs):
             batch = train_examples[i:i + bs]
             y = torch.tensor([e["future"] for e in batch], dtype=torch.float32, device=device)
-            mu = y.mean(1, keepdim=True)
-            sd = y.std(1, keepdim=True).clamp(min=1e-6)
-            fused, _ = _forward_batch(model, batch, device)
-            loss = lossf(fused, (y - mu) / sd)                       # loss in normalized space
+            fused, _ = _forward_batch(model, batch, device, use_text=arm != "A_no_text")
+            # Records are already normalized with history-only statistics in core/chatml.py.
+            # Never normalize targets with their own future mean/std: those are unavailable at inference.
+            loss = lossf(fused, y)
             opt.zero_grad(); loss.backward(); opt.step()
             tot += loss.item()
         print(f"    [arm {arm}] epoch {ep+1}/{epochs} loss {tot/max(1,len(train_examples)//bs):.4f}",
@@ -155,17 +201,14 @@ def train_arm(model, train_examples, arm, epochs, lr, bs, device, eval_fn=None):
 
 
 def forecast_mase(model, events, arm, device):
-    """Evaluate on a list of events -> list of MASE. arm 'A_no_text' uses the unimodal base output."""
+    """Evaluate a trained arm without consulting any statistic from the future window."""
     import torch                                                      # noqa
     out = []
     with torch.no_grad():
         for i in range(0, len(events), 16):
             batch = events[i:i + 16]
-            fused, base = _forward_batch(model, batch, device)
-            use = base if arm == "A_no_text" else fused
-            sd = torch.tensor([st.pstdev(e["future"]) or 1.0 for e in batch]).view(-1, 1)
-            mu = torch.tensor([st.mean(e["future"]) for e in batch]).view(-1, 1)
-            pred = (use.cpu() * sd + mu).tolist()                    # de-normalize
+            fused, _ = _forward_batch(model, batch, device, use_text=arm != "A_no_text")
+            pred = fused.cpu().tolist()
             for e, p in zip(batch, pred):
                 out.append(mase(p, e["future"], e["history"]))
     return out
@@ -181,7 +224,10 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--migas-dir", required=True, help="path to a cloned Synthefy/synthefy-migas")
     ap.add_argument("--epochs", type=int, default=6)
-    ap.add_argument("--seeds", type=int, default=1, help="repeat train/eval with N seeds -> bootstrap CI")
+    ap.add_argument("--seeds", type=int, default=3, help="repeat train/eval with N seeds -> bootstrap CI")
+    ap.add_argument("--per-domain", action="store_true", help="print the external-set domain breakdown")
+    ap.add_argument("--results-json", default=None,
+                    help="write a machine-readable, atomic experiment result manifest")
     ap.add_argument("--scan", action="store_true", help="per-epoch overfit diagnostic on B and C")
     ap.add_argument("--lr", type=float, default=1e-4)
     ap.add_argument("--bs", type=int, default=8)
@@ -221,11 +267,6 @@ def main():
             del model
         return
 
-    def boot(deltas, iters=3000):
-        n = len(deltas)
-        ms = sorted(st.median([deltas[random.randrange(n)] for _ in range(n)]) for _ in range(iters))
-        return st.median(deltas), ms[int(.025 * iters)], ms[int(.975 * iters)]
-
     arms3 = [("A_no_text", "A_no_text"), ("B", "B_flywheel"), ("C", "C_shuffled")]
     acc = {arm: {"held": [], "tmmd": []} for arm, _ in arms3}         # per arm/split: seeds x per-event MASE
     baseline = {"held": [], "tmmd": []}
@@ -255,23 +296,63 @@ def main():
         S = len(acc[arm][split]); n = len(acc[arm][split][0])
         return [st.mean(acc[arm][split][k][i] for k in range(S)) for i in range(n)]
 
+    result_summaries = []
     for split, name in [("held", "held-out"), ("tmmd", f"{glabel} generalization")]:
         if not acc["B"][split]:
             continue
         A_, B_, C_ = avg("A_no_text", split), avg("B", split), avg("C", split)
         dBA = [B_[i] - A_[i] for i in range(len(B_))]
         dBC = [B_[i] - C_[i] for i in range(len(B_))]
-        random.seed(0)
-        mba, lba, hba = boot(dBA)
-        mbc, lbc, hbc = boot(dBC)
+        events = test if split == "held" else tmmd
+        mba, lba, hba, n_clusters = bootstrap_median_delta(dBA, events)
+        mbc, lbc, hbc, _ = bootstrap_median_delta(dBC, events)
         bl = st.median(baseline[split]) if baseline[split] else float("nan")
-        print(f"\n=== {name} · seeds={a.seeds} · n={len(B_)} ===")
+        print(f"\n=== {name} · seeds={a.seeds} · n={len(B_)} · clusters={n_clusters} ===")
         print(f"  not-trained {bl:.3f} | A {st.median(A_):.3f} | B {st.median(B_):.3f} | C {st.median(C_):.3f}")
         print(f"  Δ(B−A) {mba:+.3f}  95% CI [{lba:+.3f}, {hba:+.3f}]  "
               f"{'SIG<0: text helps' if hba < 0 else 'ns'}")
         print(f"  Δ(B−C) {mbc:+.3f}  95% CI [{lbc:+.3f}, {hbc:+.3f}]  "
               f"{'SIG<0: content helps' if hbc < 0 else 'ns'}")
         print(f"  per-event B<A {sum(x < 0 for x in dBA)}/{len(dBA)} · B<C {sum(x < 0 for x in dBC)}/{len(dBC)}")
+        result_summaries.append({
+            "split": split, "label": name, "events": len(B_), "clusters": n_clusters,
+            "median_mase": {"not_trained": bl, "A_no_text": st.median(A_),
+                            "B_correct_text": st.median(B_), "C_shuffled_text": st.median(C_)},
+            "delta_B_minus_A": {"median": mba, "ci95": [lba, hba]},
+            "delta_B_minus_C": {"median": mbc, "ci95": [lbc, hbc]},
+            "wins": {"B_lt_A": sum(x < 0 for x in dBA), "B_lt_C": sum(x < 0 for x in dBC)},
+        })
+        if split == "tmmd" and a.per_domain:
+            from collections import defaultdict
+            dom = defaultdict(lambda: {"a": [], "c": []})
+            for i in range(len(B_)):
+                dd = tmmd[i].get("domain", "?")
+                dom[dd]["a"].append(dBA[i]); dom[dd]["c"].append(dBC[i])
+            print(f"  --- per-domain ({glabel}) ---")
+            for dd in sorted(dom, key=lambda k: -len(dom[k]["c"])):
+                aa, cc = dom[dd]["a"], dom[dd]["c"]
+                print(f"  {dd[:32]:32} n={len(cc):5}  medD(B-A) {st.median(aa):+.3f}  "
+                      f"medD(B-C) {st.median(cc):+.3f}  B<C {sum(x < 0 for x in cc):4}/{len(cc):<4}")
+    if a.results_json:
+        train_path = a.finetune_file or FINETUNE
+        with open(train_path, encoding="utf-8") as f:
+            split_policy = json.load(f).get("split_policy", "legacy_unknown")
+        result = {
+            "schema_version": 1,
+            "status": "completed",
+            "created_at_utc": datetime.datetime.now(datetime.timezone.utc).isoformat(),
+            "runner": "migas_finetune.py",
+            "data": {"train_path": os.path.abspath(train_path), "train_sha256": _sha256(train_path),
+                     "external_set": a.gen_test, "external_sha256": _sha256(GEN_SETS[a.gen_test])},
+            "config": {"epochs": a.epochs, "seeds": a.seeds, "learning_rate": a.lr,
+                       "batch_size": a.bs, "limit_train": a.limit_train,
+                       "limit_external": a.limit_tmmd, "split_policy": split_policy,
+                       "target_normalization": "history_context_only",
+                       "bootstrap_unit": "persistent_series_or_entity"},
+            "results": result_summaries,
+        }
+        _write_json_atomic(result, a.results_json)
+        print(f"\nresult manifest -> {a.results_json}")
 
 
 if __name__ == "__main__":

@@ -25,13 +25,15 @@ source touches only `sources/<name>.py`; the shared `core/` is untouched.
 **Flywheel** (`flywheel/`). An automated engine that *manufactures* pairs for series with **no
 pre-existing text**: detect salient moves → retrieve news → LLM-distill a **leakage-safe** cause →
 faithfulness + leakage gates → emit. Two links built (oil via GDELT/BigQuery; Wikipedia via
-point-in-time revisions, no external retrieval).
+point-in-time revisions, no external retrieval). The old oil/commodity outputs use FRED-backed
+series and remain reproducible research artifacts, but are blocked from the release package by the
+central license registry.
 
 **Schema.** Every record is a Qwen ChatML transcript with `<ts></ts>` placeholders mapped to
 z-normalized time-series spans, with loss masks (`text_desc`, `ts_forecast`,
 `ts_forecast_covariates`, …). Format spec in [`ts_lang_curation/DATASHEET.md`](./ts_lang_curation/DATASHEET.md).
 
-**Verification pipeline** (`flywheel/companion/`) — one pipeline, two stages:
+**Verification pipeline** (`flywheel/companion/`) — correctness and usefulness are separate:
 
 | stage | file | question | compute |
 |-------|------|----------|---------|
@@ -42,11 +44,21 @@ Stage ② is a **3-arm test** — **A** no-text / **B** correct-text / **C** shu
 permuted onto the wrong series). A real gain needs **B to beat both A and C**: beating A but not C
 means the gain is the *channel*, not the *content*.
 
+`verify_any.py` has two explicit profiles. `structural` checks trainability and format invariants;
+`release` additionally enforces the reviewed source-license decision, attribution conditions,
+source, and evidence URLs. A structural pass
+must not be described as publication-ready.
+
+> **Experiment validity notice (2026-09-05).** Historical MiGAS numbers in local reports predate the
+> removal of future-window normalization and symmetric A/B/C training. Treat those numbers as
+> invalidated pending rerun. The corrected runner uses history-normalized targets, a strict shuffled
+> derangement, both temporal-ID and entity-OOD exports, three seeds by default, and cluster bootstrap CIs.
+
 **Shared framework & format bridge** (for merging two producers' data). The curation framework is
 one shared `core/` + one thin adapter per source — see [`ts_lang_curation/FRAMEWORK.md`](./ts_lang_curation/FRAMEWORK.md).
-Data can live in either the ChatML or the instruction-free CPT form; `flywheel/companion/verify_any.py`
-verifies **both** through one gate, and `chatml_to_cpt.py` / `cpt_to_chatml.py` convert between them
-(CPT is the canonical form).
+Data can be persisted as the lossless `pair@1` canonical IR, then emitted directly as ChatML or the
+instruction-free CPT form; `flywheel/companion/verify_any.py` verifies both output formats through
+one gate. The older converters remain compatibility tools, not the primary architecture.
 
 **Discipline.** Independent audits (`flywheel/audit_*.py`) re-derive quality from the spec rather
 than trusting the builder's own `validate()`; the leakage cutoff (`knowledge_time` < forecast
@@ -72,14 +84,25 @@ micromamba create -f environment.yml           # env: ts-language (Python 3.11)
 
 ```bash
 # build a source into ChatML records
-micromamba run -n ts-language python ts_lang_curation/build.py --source fred_fomc
+micromamba run -n ts-language python ts_lang_curation/build.py --source treasury_fomc
+micromamba run -n ts-language python ts_lang_curation/build.py --source sec_edgar --format ir
+micromamba run -n ts-language python ts_lang_curation/build.py --source sec_edgar --format cpt
 
 # minimum regression (build 2 sources + replay flywheel + independent audits)
 micromamba run -n ts-language python ts_lang_curation/scripts/regress.py
 
 # verify a CPT corpus (stage 1, CPU) / probe forecasting-lift (stage 2)
 micromamba run -n ts-language python ts_lang_curation/flywheel/companion/verify_cpt.py <corpus_dir> --report out.html
+micromamba run -n ts-language python ts_lang_curation/flywheel/companion/verify_any.py <corpus_dir> --profile release --strict
+micromamba run -n ts-language python ts_lang_curation/release.py ts_lang_curation/out/release_candidate_v05
 micromamba run -n ts-language python ts_lang_curation/flywheel/companion/stage2_cpt.py <corpus.jsonl>
+
+# dependency-free invariant tests
+python -m unittest discover -s ts_lang_curation/tests -v
+
+# corrected GPU experiment; writes a provenance-bearing result manifest
+python ts_lang_curation/flywheel/companion/migas_finetune.py \
+  --migas-dir /path/to/synthefy-migas --seeds 3 --results-json experiment_result.json
 
 # ForecastBench analysis (offline, from cached forecasts — no GPU)
 micromamba run -n ts-language python forecastbench_eval/analyze_domain_edge.py

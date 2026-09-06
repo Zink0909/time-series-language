@@ -196,12 +196,15 @@ def check_record(rec, min_window):
 
     lic = rec.get("license")
     if lic is not None:
-        if lic in LICENSE_GATED or (isinstance(lic, str) and "nc" in lic.lower().replace("-", "")):
+        if rec.get("license_status") in {"approved", "conditional"}:
+            pass  # the central governance registry supersedes this legacy enum
+        elif lic in LICENSE_GATED or (isinstance(lic, str) and "nc" in lic.lower().replace("-", "")):
             warns.append(("license_nontrainable", f"license={lic!r} (release-gated / non-commercial)"))
         elif lic not in LICENSE_TRAINABLE:
             warns.append(("license_nonstandard", f"license={lic!r} not a standard trainable enum"))
 
-    if not (URL_RE.match(str(rec.get("source", ""))) or rec.get("period_start")):
+    if not (URL_RE.match(str(rec.get("source", ""))) or rec.get("text_url")
+            or rec.get("ts_url") or rec.get("period_start")):
         warns.append(("missing_provenance", "no source URL and no period_start"))
 
     return errs, warns

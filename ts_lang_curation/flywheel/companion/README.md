@@ -21,10 +21,19 @@ alignment, not the content (this answers the MiGAS relabel critique).
 **Leakage discipline** (the result is void without it):
 - **Time split** — `train origin < cutoff ≤ test origin`; asserted in `data.time_split` (cut time
   before windowing, 2512.06932).
+- **Two named split estimands** — the standard temporal-ID export allows the same persistent entity
+  on opposite sides of the cutoff; a second `entity_ood` export purges test entities from train.
+  Results must identify which split they use rather than calling both simply "generalization".
+- **Target normalization** — targets remain in the history-context-normalized space stored in the
+  record; future-window mean/std are never consulted during training or inference.
 - **Base-model stratum** — test events are tagged `after_base_cutoff`; the honest gain is on events
   the base model could NOT have memorized (implicit lookahead, 2512.23847).
 
-**Metric:** median MASE (robust to the long tail of near-zero-baseline spike events).
+**Metric:** median MASE (robust to the long tail of near-zero-baseline spike events), with confidence
+intervals cluster-bootstrapped by persistent entity/series.
+
+The MiGAS runner trains the same fusion stack in all three arms, defaults to three seeds, and can
+write a machine-readable run receipt with `--results-json PATH`.
 
 ## Files
 - `data.py` — load text→ts into (history_z, future_z, text); time split + leakage assertion.

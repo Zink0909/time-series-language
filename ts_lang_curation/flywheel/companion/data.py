@@ -27,6 +27,17 @@ def _spans(rec):
     return list(ctx["values"]), list(tgt["values"][H:])       # history_z, future_z
 
 
+def _series_group(rec):
+    """Stable entity/series identity used to prevent repeated-entity train/test overlap."""
+    for key in ("group_id", "entity_id", "article", "ticker", "symbol", "cve_id"):
+        if rec.get(key):
+            return f"{rec.get('dataset', '?')}:{rec[key]}"
+    sid = str(rec.get("series_id") or "")
+    # Most event IDs append an ISO date to the persistent entity/series name.
+    stem = re.split(r"_\d{4}-\d{2}-\d{2}(?:_|$)", sid, maxsplit=1)[0]
+    return f"{rec.get('dataset', '?')}:{stem or sid}"
+
+
 def load(datasets=None, flywheel_only=True):
     """Load forecast items: {series_id, dataset, origin, kt, history, future, text, flywheel}."""
     items = []
@@ -46,23 +57,31 @@ def load(datasets=None, flywheel_only=True):
                 continue
             items.append({
                 "series_id": r.get("series_id"), "dataset": r.get("dataset"),
+                "series_group": _series_group(r),
                 "origin": r.get("spike_date") or r.get("event_date"),
                 "kt": r.get("knowledge_time"), "history": hist, "future": fut,
                 "text": _conditioning_text(r), "flywheel": bool(r.get("flywheel"))})
     return items
 
 
-def time_split(items, cutoff, base_pretrain_cutoff=None):
+def time_split(items, cutoff, base_pretrain_cutoff=None, group_disjoint=False):
     """Split by forecast origin: train = origin < cutoff, test = origin >= cutoff. Asserts no
-    leakage (every train event strictly before cutoff; every test knowledge_time >= cutoff, i.e.
-    nothing the model trained on could have seen the test events). Optionally tags each test item
-    with `after_base_cutoff` — the honest stratum where gains can't be base-model memorization."""
+    leakage (every record's knowledge_time precedes its own forecast origin). When
+    `group_disjoint=True`, purge from train every persistent entity/series appearing in test.
+    Optionally tags each test item with `after_base_cutoff`."""
     train = [x for x in items if x["origin"] and x["origin"] < cutoff]
     test = [x for x in items if x["origin"] and x["origin"] >= cutoff]
+    if group_disjoint:
+        test_groups = {x.get("series_group") or x.get("series_id") for x in test}
+        train = [x for x in train if (x.get("series_group") or x.get("series_id")) not in test_groups]
     problems = []
-    for x in train:
-        if x["kt"] and x["kt"][:10] >= cutoff:
-            problems.append(f"train {x['series_id']} kt {x['kt']} >= cutoff {cutoff}")
+    for split_name, rows in (("train", train), ("test", test)):
+        for x in rows:
+            if not x.get("kt"):
+                problems.append(f"{split_name} {x['series_id']} missing knowledge_time")
+            elif x["kt"][:10] >= x["origin"][:10]:
+                problems.append(
+                    f"{split_name} {x['series_id']} kt {x['kt']} >= origin {x['origin']}")
     if train and test:
         max_train = max(x["origin"] for x in train)
         min_test = min(x["origin"] for x in test)
@@ -70,4 +89,10 @@ def time_split(items, cutoff, base_pretrain_cutoff=None):
             problems.append(f"boundary violation: max_train {max_train} / min_test {min_test}")
     for x in test:
         x["after_base_cutoff"] = bool(base_pretrain_cutoff and x["origin"] > base_pretrain_cutoff)
+    if group_disjoint:
+        train_groups = {x.get("series_group") or x.get("series_id") for x in train}
+        test_groups = {x.get("series_group") or x.get("series_id") for x in test}
+        overlap = train_groups & test_groups
+        if overlap:
+            problems.append(f"group overlap after purge: {len(overlap)}")
     return train, test, problems

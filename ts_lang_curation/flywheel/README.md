@@ -1,5 +1,9 @@
 # Data Flywheel (open-loop v1 — WTI crude demo)
 
+> **Governance status:** research-only / blocked from release. The cached WTI series came through
+> FRED. Keep this demo for offline reproducibility and migration testing; do not include its output
+> in training or redistribution until the series leg is rebuilt from an approved original source.
+
 Proves the flywheel: manufacture `text→ts` pairs for a series that has **no pre-paired text**, by
 retrieving the real events that explain its moves and grounding them with an LLM. Reuses `../core/`.
 

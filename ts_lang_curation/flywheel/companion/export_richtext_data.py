@@ -31,7 +31,8 @@ CUTOFF, PRETRAIN = "2024-01-01", "2023-10-01"
 
 def _pack(x):
     return {"history": [round(v, 4) for v in x["history"]],
-            "future": [round(v, 4) for v in x["future"]], "text": x["text"]}
+            "future": [round(v, 4) for v in x["future"]], "text": x["text"],
+            "series_group": x.get("series_group")}
 
 
 def _key(x):
@@ -40,10 +41,14 @@ def _key(x):
 
 
 def build(items, out):
-    train, test, problems = data.time_split(items, CUTOFF, PRETRAIN)
-    tr = arms.make_arms(train)
+    train, test, problems = data.time_split(items, CUTOFF, PRETRAIN, group_disjoint=False)
+    tr = arms.make_arms(train, strata=("dataset",))
     export = {
         "cutoff": CUTOFF, "leakage_ok": not problems,
+        "split_policy": "temporal_same_entity_allowed",
+        "group_overlap": len({x["series_group"] for x in train} &
+                             {x["series_group"] for x in test}),
+        "shuffle_policy": "within_dataset_strict_derangement",
         "train": {"A_no_text": [_pack(x) for x in tr["A_no_text"]],
                   "B_flywheel": [_pack(x) for x in tr["B_flywheel_text"]],
                   "C_shuffled": [_pack(x) for x in tr["C_shuffled_text"]]},

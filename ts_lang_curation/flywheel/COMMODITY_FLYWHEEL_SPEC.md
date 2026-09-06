@@ -1,5 +1,9 @@
 # Commodity flywheel — v1 spec
 
+> **Governance status:** historical research spec. The current cached series are FRED-backed and
+> the `flywheel_commodity*` datasets are blocked from release. The detection, retrieval and audit
+> code remains usable; a release rebuild requires approved first-party series replacements.
+
 **Why this exists (the diagnosis it answers).** The fine-tune "cheat upper-bound" probe showed the
 flywheel mechanism is sound — when the conditioning text carries *real information about what happened*,
 the model uses it (MASE 2.84→2.16). But ~95 % of the Wikipedia point-in-time text is a **generic

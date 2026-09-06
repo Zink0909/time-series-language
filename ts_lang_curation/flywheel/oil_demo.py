@@ -140,9 +140,11 @@ def _gdelt_fetch(date, policy):
     return out
 
 
-def _retrieval(salient, policy, refresh=False):
+def _retrieval(salient, policy, refresh=False, offline=False):
     """Cache-first S4: fill gaps (or refresh) via live GDELT, 6s apart (API rate limit)."""
     cache = json.load(open(GDELT_JSON)) if os.path.exists(GDELT_JSON) else {}
+    if offline:
+        return cache
     dirty = False
     for e in salient:
         d = e["date"]
@@ -221,12 +223,12 @@ def _knowledge_time(arts):
 
 
 # ---------- S8 · emit ----------
-def pairs_and_trace(policy="prior_day", refresh=False):
+def pairs_and_trace(policy="prior_day", refresh=False, offline=False):
     rows = _prices()
     idx = {d: i for i, (d, _) in enumerate(rows)}
     salient = _detect(rows)
-    gdelt = _retrieval(salient, policy, refresh)
-    recs, trace = [], []
+    gdelt = _retrieval(salient, policy, refresh, offline)
+    examples, trace = [], []
     for e in salient:
         d = e["date"]
         t = {"date": d, "ret": e["ret"], "articles": [], "dropped_for_leakage": 0,
@@ -262,15 +264,10 @@ def pairs_and_trace(policy="prior_day", refresh=False):
                   "flywheel": True, "text_synthesized_from": "gdelt_headlines"},
             text_source="flywheel_gdelt_synth", is_generated="derived_generated",
             knowledge_time=_knowledge_time(arts))
-        rec = build_record(ex)
-        errs = validate(rec)
-        if errs:
-            t["reason"] = f"schema_invalid: {errs}"
-            continue
-        recs.append(rec)
+        examples.append(ex)
         t.update({"articles": arts[:3], "cause": cause, "hist": hist, "fut": fut,
                   "emitted": True})
-    return recs, trace
+    return examples, trace
 
 
 def main():
@@ -279,8 +276,13 @@ def main():
                     help="article cutoff: prior_day = event day 00:00 UTC (default, strict T-1)")
     ap.add_argument("--refresh-retrieval", action="store_true",
                     help="re-query GDELT for every event (else only fills gaps)")
+    ap.add_argument("--offline", action="store_true", help="use cached retrieval only")
     a = ap.parse_args()
-    recs, trace = pairs_and_trace(a.cutoff, a.refresh_retrieval)
+    examples, trace = pairs_and_trace(a.cutoff, a.refresh_retrieval, a.offline)
+    recs = [build_record(example) for example in examples]
+    invalid = [validate(record) for record in recs if validate(record)]
+    if invalid:
+        raise ValueError(f"canonical flywheel examples emitted invalid ChatML: {invalid[:3]}")
     n = write_jsonl(recs, os.path.join(PKG, "out", "flywheel_oil.jsonl"))
     json.dump(trace, open(os.path.join(RAW, "_trace.json"), "w"), indent=1)
     got = sum(1 for t in trace if t["emitted"])

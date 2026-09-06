@@ -53,10 +53,9 @@ def _denorm(rec):
         vals = sp.get("values") or []
         ns = norm.get(i, {})
         m, sd = ns.get("mean"), ns.get("std")
-        if m is None or sd is None:      # no norm info -> keep as-is (rare)
-            raw = list(vals)
-        else:
-            raw = [round(v * sd + m, 6) for v in vals]
+        if m is None or sd is None:
+            raise ValueError(f"span[{i}] lacks normalization metadata; refusing lossy conversion")
+        raw = [round(v * sd + m, 6) for v in vals]
         fr = str(sp.get("freq"))
         out.append({"values": raw, "unit": sp.get("unit"), "freq": FREQ_MAP.get(fr, fr)})
     return out
@@ -69,7 +68,10 @@ def convert(rec):
     desc = _description(rec)
     if len(desc) < 10:
         return None, "empty/short description"
-    chans = _denorm(rec)
+    try:
+        chans = _denorm(rec)
+    except ValueError as exc:
+        return None, str(exc)
     if not chans or any(not c["values"] for c in chans):
         return None, "no series values"
     freqs = {c["freq"] for c in chans}
@@ -81,6 +83,7 @@ def convert(rec):
         text = desc.rstrip(". ") + ". " + TS
         multi = False
     out = {
+        "schema_version": "cpt-world-knowledge@1",
         "text": text,
         "timeseries": chans,
         "task_type": "world_knowledge",
@@ -89,7 +92,13 @@ def convert(rec):
     if multi:
         out["multi_series"] = True
     for k_src, k_dst in [("series_id", "series_id"), ("dataset", "dataset"), ("source", "source"),
-                         ("license", "license"), ("knowledge_time", "knowledge_time")]:
+                         ("license", "license"), ("license_status", "license_status"),
+                         ("license_terms_url", "license_terms_url"), ("attribution", "attribution"),
+                         ("license_reason", "license_reason"),
+                         ("governance_registry_version", "governance_registry_version"),
+                         ("governance_reviewed_at", "governance_reviewed_at"),
+                         ("governance_canonical_dataset", "governance_canonical_dataset"),
+                         ("knowledge_time", "knowledge_time")]:
         if k_src in rec:
             out[k_dst] = rec[k_src]
     out["alignment"] = rec.get("alignment", "describes")   # a text_desc is a describe by construction

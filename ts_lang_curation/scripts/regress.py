@@ -28,14 +28,14 @@ def check(name, ok, detail):
 def main():
     print("== ts_lang_curation regress ==")
 
-    for src in ["usgs_quakes", "fred_fomc"]:
+    for src in ["usgs_quakes", "treasury_fomc"]:
         code, out = run(["build.py", "--source", src])
-        m = re.search(r"(\d+) valid records .*\((\d+) invalid\)", out)
-        ok = code == 0 and m and int(m.group(2)) == 0 and int(m.group(1)) > 0
+        m = re.search(r"(\d+) valid records .*\((\d+) invalid, (\d+) unsupported", out)
+        ok = code == 0 and m and int(m.group(2)) == 0 and int(m.group(3)) == 0 and int(m.group(1)) > 0
         check(f"build --source {src}", bool(ok),
               m.group(0) if m else f"exit {code}: {out.splitlines()[-1] if out else '(no output)'}")
 
-    code, out = run(["flywheel/oil_demo.py"])
+    code, out = run(["flywheel/oil_demo.py", "--offline"])
     m = re.search(r"(\d+)/(\d+) events emitted", out)
     ok = code == 0 and m and int(m.group(1)) > 0            # forecast_leak may drop a soft-leak cause (7/8)
     check("flywheel oil_demo (cached replay)", bool(ok),

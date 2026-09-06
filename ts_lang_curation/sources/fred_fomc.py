@@ -1,14 +1,14 @@
-# sources/fred_fomc.py — thin adapter. Knows ONLY how to fetch/parse/pair FRED+FOMC.
+# sources/fred_fomc.py — legacy module name; now uses first-party Treasury + FOMC sources.
 # Format/validation/output are handled by core/. Reads from raw/ cache (see README to refresh).
 import os, re, glob, html as _html
 from core.schema import TsToText, TextToTs
 from core.verify import is_consistent
 from core.generate import grounded_describe
+from sources.official_series import TREASURY_XML, fetch_treasury_yields
 
 HERE = os.path.dirname(__file__)
 RAW = os.path.join(HERE, "..", "raw")
-DGS2_CACHE = os.path.join(RAW, "DGS2_2008-01-01_2026-06-30.csv")
-DGS10_CACHE = os.path.join(RAW, "DGS10_2008-01-01_2026-06-30.csv")
+TREASURY_CACHE = os.path.join(RAW, "treasury_cmt_2008_2026.csv")
 FOMC_DIR = os.path.join(RAW, "fomc")
 S2T_DIR = os.path.join(RAW, "fomc_s2t")        # cached Qwen-generated ts->text descriptions
 BEFORE_CYCLE = [20, 30, 45, 60]                # varied history lengths (rates have long memory)
@@ -53,8 +53,12 @@ def _load(path):
     return rows, dates, {d: i for i, d in enumerate(dates)}
 
 
-def _load_dgs2():
-    return _load(DGS2_CACHE)
+def _load_treasury():
+    combined = fetch_treasury_yields(2008, 2026, TREASURY_CACHE)
+    rows2 = [(date, two) for date, two, _ in combined]
+    rows10 = [(date, ten) for date, _, ten in combined]
+    dates = [date for date, _ in rows2]
+    return rows2, dates, {date: i for i, date in enumerate(dates)}, dict(rows10)
 
 
 def _extract(htmltext):
@@ -131,8 +135,7 @@ def _split(rows, dates, idx, date, before, after):
 
 
 def pairs():
-    rows, dates, idx = _load_dgs2()
-    dgs10 = {d: v for d, v in _load(DGS10_CACHE)[0]} if os.path.exists(DGS10_CACHE) else {}
+    rows, dates, idx, dgs10 = _load_treasury()
     for mi, fp in enumerate(sorted(glob.glob(os.path.join(FOMC_DIR, "*.html")))):
         d8 = os.path.basename(fp)[:8]
         date = f"{d8[:4]}-{d8[4:6]}-{d8[6:8]}"
@@ -140,7 +143,7 @@ def pairs():
         if not statement:
             continue
         stmt_url = f"https://www.federalreserve.gov/newsevents/pressreleases/monetary{d8}a.htm"
-        ts_url = "https://fred.stlouisfed.org/series/DGS2"
+        ts_url = TREASURY_XML.format(year=date[:4])
 
         # A — text -> ts (ts_forecast[_covariates]): FOMC statement + pre-decision history ->
         #     post-decision future. Loss only on the post-decision suffix (loss_start=H).
@@ -163,8 +166,8 @@ def pairs():
                 history=hist, future=fut,
                 series_name="2-year U.S. Treasury yield (%)",
                 unit="pct_yield_2y_treasury", freq="business_daily", covariates=covs,
-                meta={"dataset": "fred_fomc", "source": "FRED DGS2 + Federal Reserve FOMC statement",
-                      "series_id": f"DGS2_{date}_FOMC_t2s", "fred_series": "DGS2",
+                meta={"dataset": "treasury_fomc", "source": "U.S. Treasury CMT + Federal Reserve FOMC statement",
+                      "series_id": f"TREASURY2Y_{date}_FOMC_t2s", "series_provider": "US_TREASURY",
                       "event_date": date, "direction": "text_to_ts", "history_days": before,
                       "history_range": [h0, date], "future_range_end": f1,
                       "text_url": stmt_url, "ts_url": ts_url},
@@ -182,8 +185,8 @@ def pairs():
                 series=[{"name": "2-year Treasury yield", "values": vals,
                          "unit": "pct_yield_2y_treasury", "freq": "business_daily"}],
                 answer=desc,
-                meta={"dataset": "fred_fomc", "source": "FRED DGS2 + Federal Reserve FOMC statement",
-                      "series_id": f"DGS2_{date}_FOMC_s2t", "fred_series": "DGS2",
+                meta={"dataset": "treasury_fomc", "source": "U.S. Treasury CMT + Federal Reserve FOMC statement",
+                      "series_id": f"TREASURY2Y_{date}_FOMC_s2t", "series_provider": "US_TREASURY",
                       "event_date": date, "direction": "ts_to_text",
                       "grounding": "series_stats+fomc_decision", "numeric_verified": verified,
                       "text_url": stmt_url, "ts_url": ts_url},

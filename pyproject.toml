@@ -1,0 +1,15 @@
+[project]
+name = "time-series-language"
+version = "0.5.0"
+description = "Curation and verification of paired text and time-series data"
+requires-python = ">=3.11"
+dependencies = [
+  "openai>=2,<3",
+  "openpyxl>=3.1,<4",
+  "python-docx>=1,<2",
+]
+
+[tool.pytest.ini_options]
+testpaths = ["ts_lang_curation/tests"]
+python_files = ["test_*.py"]
+addopts = "-q"

@@ -20,27 +20,43 @@ sys.path.insert(0, HERE)
 import data, arms                                                  # noqa: E402
 
 OUT = os.path.join(HERE, "_finetune_export.json")
+OUT_ENTITY_OOD = os.path.join(HERE, "_finetune_export_entity_ood.json")
 
 
 def _pack(x):
     return {"history": [round(v, 4) for v in x["history"]],
-            "future": [round(v, 4) for v in x["future"]], "text": x["text"]}
+            "future": [round(v, 4) for v in x["future"]], "text": x["text"],
+            "series_group": x.get("series_group")}
 
 
-def main():
-    items = data.load(flywheel_only=True)
-    train, test, problems = data.time_split(items, "2024-01-01", "2023-10-01")
-    tr = arms.make_arms(train)                                     # A_no_text / B_flywheel_text / C_shuffled_text
+def _export(items, group_disjoint):
+    train, test, problems = data.time_split(
+        items, "2024-01-01", "2023-10-01", group_disjoint=group_disjoint)
+    tr = arms.make_arms(train, strata=("dataset",))                # within-source shuffled control
+    train_groups = {x["series_group"] for x in train}
+    test_groups = {x["series_group"] for x in test}
     export = {
         "cutoff": "2024-01-01", "leakage_ok": not problems,
+        "split_policy": ("temporal_entity_disjoint" if group_disjoint
+                         else "temporal_same_entity_allowed"),
+        "group_overlap": len(train_groups & test_groups),
+        "shuffle_policy": "within_dataset_strict_derangement",
         "train": {"A_no_text": [_pack(x) for x in tr["A_no_text"]],
                   "B_flywheel": [_pack(x) for x in tr["B_flywheel_text"]],
                   "C_shuffled": [_pack(x) for x in tr["C_shuffled_text"]]},
         "test": [{"series_id": x["series_id"], "dataset": x["dataset"], **_pack(x)} for x in test],
     }
-    json.dump(export, open(OUT, "w"), ensure_ascii=False)
-    print(f"train {len(train)} (x3 arms) + test {len(test)} events -> {OUT} "
-          f"({os.path.getsize(OUT) // 1024} KB), leakage_ok={not problems}")
+    return export, len(train), len(test), problems
+
+
+def main():
+    items = data.load(flywheel_only=True)
+    for out, group_disjoint in ((OUT, False), (OUT_ENTITY_OOD, True)):
+        export, n_train, n_test, problems = _export(items, group_disjoint)
+        json.dump(export, open(out, "w"), ensure_ascii=False)
+        print(f"{export['split_policy']}: train {n_train} (x3 arms) + test {n_test} -> {out} "
+              f"({os.path.getsize(out) // 1024} KB), group_overlap={export['group_overlap']}, "
+              f"leakage_ok={not problems}")
 
 
 if __name__ == "__main__":

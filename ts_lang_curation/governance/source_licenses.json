@@ -1,0 +1,75 @@
+{
+  "registry_version": "source-licenses@1",
+  "reviewed_at": "2026-09-06",
+  "aliases": {
+    "flywheel_commodity_rich": "flywheel_commodity",
+    "flywheel_wiki": "wiki_pageviews",
+    "flywheel_wiki_big": "wiki_pageviews",
+    "flywheel_wiki_scaled": "wiki_pageviews"
+  },
+  "sources": {
+    "cyber_epss": {
+      "status": "conditional",
+      "license": "LicenseRef-CISA-USGov-Work AND LicenseRef-FIRST-EPSS-Free-Use",
+      "terms_url": "https://www.first.org/epss/faq",
+      "attribution": "Contains CISA Known Exploited Vulnerabilities data and FIRST EPSS scores; credit CISA and the FIRST EPSS project.",
+      "reason": "CISA is a U.S. government source; FIRST states EPSS is free to use and requests attribution, but does not publish a standard SPDX license for the scores."
+    },
+    "fnspid": {
+      "status": "review_required",
+      "license": "NOASSERTION",
+      "terms_url": "https://github.com/Zdong104/FNSPID_Financial_News_Dataset",
+      "attribution": "",
+      "reason": "The checked-in adapter does not identify a machine-learning redistribution license for the news text and market data."
+    },
+    "fred_fomc": {
+      "status": "blocked",
+      "license": "NOASSERTION",
+      "terms_url": "https://fred.stlouisfed.org/legal/terms/",
+      "attribution": "",
+      "reason": "Current FRED Terms prohibit use of FRED Services or FRED Content in connection with development or training of machine-learning or large-language models. Replace the FRED leg with an independently licensed original source before release or training."
+    },
+    "treasury_fomc": {
+      "status": "approved",
+      "license": "LicenseRef-USGov-Public-Domain",
+      "terms_url": "https://home.treasury.gov/treasury-daily-interest-rate-xml-feed",
+      "attribution": "Credit the U.S. Department of the Treasury for yield-curve data and the Federal Reserve Board for FOMC statements; retain per-record official URLs.",
+      "reason": "The adapter uses first-party U.S. Treasury yield feeds and Federal Reserve Board FOMC statements rather than the FRED service."
+    },
+    "flywheel_commodity": {
+      "status": "blocked",
+      "license": "NOASSERTION",
+      "terms_url": "https://fred.stlouisfed.org/legal/terms/",
+      "attribution": "If the FRED leg is replaced and the pair becomes releasable, cite and link the GDELT Project for the retrieved event data.",
+      "reason": "The numeric series are sourced through FRED, whose current Terms prohibit ML/LLM development or training use; GDELT's separate reuse permission does not cure that restriction."
+    },
+    "flywheel_oil": {
+      "status": "blocked",
+      "license": "NOASSERTION",
+      "terms_url": "https://fred.stlouisfed.org/legal/terms/",
+      "attribution": "If the FRED leg is replaced and the pair becomes releasable, cite and link the GDELT Project for the retrieved event data.",
+      "reason": "The WTI series is FRED DCOILWTICO. Current FRED Terms prohibit ML/LLM development or training use; replace it with an independently licensed original source."
+    },
+    "sec_edgar": {
+      "status": "approved",
+      "license": "LicenseRef-SEC-Free-Reuse",
+      "terms_url": "https://www.sec.gov/about/webmaster-frequently-asked-questions",
+      "attribution": "Credit the U.S. Securities and Exchange Commission and retain filing provenance.",
+      "reason": "SEC states that government-created content and EDGAR public filing content are free to access and reuse."
+    },
+    "usgs_quakes": {
+      "status": "approved",
+      "license": "LicenseRef-USGS-Public-Domain",
+      "terms_url": "https://www.usgs.gov/faqs/are-usgs-reportspublications-copyrighted",
+      "attribution": "Credit the U.S. Geological Survey as the data source.",
+      "reason": "USGS-authored or produced data and information are generally U.S. public-domain works; USGS requests source acknowledgment."
+    },
+    "wiki_pageviews": {
+      "status": "conditional",
+      "license": "CC-BY-SA-4.0",
+      "terms_url": "https://foundation.wikimedia.org/wiki/Legal:Wikimedia_Developer_App_Guidelines/en",
+      "attribution": "Attribute Wikipedia/Wikimedia contributors, link the source page and license, and indicate modifications; preserve share-alike obligations where applicable.",
+      "reason": "Wikipedia text is generally CC BY-SA and GFDL; this composite source is admitted only with attribution and share-alike obligations retained."
+    }
+  }
+}

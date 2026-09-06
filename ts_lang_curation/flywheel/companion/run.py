@@ -61,6 +61,12 @@ def main():
 
     if a.limit:
         test = test[:a.limit]
+    test, singleton_rows = arms.partition_shuffleable(test)
+    if singleton_rows:
+        dropped_sources = sorted({x.get("dataset", "unknown") for x in singleton_rows})
+        print(f"\ncontrol eligibility: dropped {len(singleton_rows)} singleton-stratum row(s) "
+              f"from {', '.join(dropped_sources)}; within-source derangement is impossible for n=1")
+    eligible_after = [x for x in test if x.get("after_base_cutoff")]
     the_arms = arms.make_arms(test)
     print(f"\narms built on {len(test)} test events: "
           + ", ".join(f"{k}={len(v)}" for k, v in the_arms.items()))
@@ -109,10 +115,12 @@ def main():
         text_status = f"PENDING — {e}"
     print(f"\ntext-conditioned base ({stub.name}): {text_status}")
     print("  -> success criterion when wired: B_flywheel_text < A_no_text AND < C_shuffled_text,")
-    print("     strongest on the {} test events after the base-model cutoff.".format(len(after)))
+    print("     strongest on the {} eligible test events after the base-model cutoff."
+          .format(len(eligible_after)))
 
     json.dump({"cutoff": a.cutoff, "base_cutoff": a.base_cutoff, "n_train": len(train),
-               "n_test": len(test), "n_after_base_cutoff": len(after),
+               "n_test": len(test), "n_after_base_cutoff": len(eligible_after),
+               "n_singleton_rows_excluded": len(singleton_rows),
                "leakage_clean": not problems, "numeric_mase": table,
                "text_arm": text_status}, open(REPORT, "w"), indent=1)
     print(f"\nwrote {REPORT}")

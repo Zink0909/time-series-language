@@ -65,7 +65,10 @@ def convert(rec):
     answer = _clean_answer(text)
     if len(answer) < 10:
         return None, "answer too short after cleaning"
-    meta = {k: rec[k] for k in ("series_id", "dataset", "source", "license", "alignment",
+    meta = {k: rec[k] for k in ("series_id", "dataset", "source", "license", "license_status",
+                                "license_terms_url", "attribution", "license_reason",
+                                "governance_registry_version", "governance_reviewed_at",
+                                "governance_canonical_dataset", "alignment",
                                 "text_source", "domain", "region", "period_start", "period_end",
                                 "text_quality") if k in rec}
     meta["converted_from"] = "cpt_world_knowledge"

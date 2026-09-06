@@ -21,7 +21,8 @@ from core.schema import TextToTs, build_record, validate           # noqa: E402
 from core.writer import write_jsonl                                # noqa: E402
 from core.chatml import ROBUST_COEF                                 # noqa: E402
 
-META = json.load(open(wd.META))
+with open(wd.META, encoding="utf-8") as _meta_handle:
+    META = json.load(_meta_handle)
 SCALED = os.path.join(wd.FW_WIKI, "scaled")
 REVDIR = os.path.join(SCALED, "rev")
 TRACE = os.path.join(SCALED, "_scale_trace.json")
@@ -110,7 +111,7 @@ def build(refresh=False, limit=0):
     slugs = _persistent_slugs()
     if limit:
         slugs = slugs[:limit]
-    recs, trace = [], []
+    examples, trace = [], []
     for slug in slugs:
         m = META.get(slug, {})
         title, canon, ev = m.get("title", ""), m.get("canonical", ""), m.get("event_date", "")
@@ -150,13 +151,10 @@ def build(refresh=False, limit=0):
                       "text_url": f"https://en.wikipedia.org/w/index.php?oldid={rev['revid']}"},
                 text_source="wikipedia_lead_pit", is_generated="real",
                 knowledge_time=rev["timestamp"])
-            rec = build_record(ex)
-            if validate(rec):
-                continue
-            recs.append(rec)
+            examples.append(ex)
             n_emit += 1
         trace.append({"slug": slug, "title": title, "spikes": len(peaks), "emitted": n_emit})
-    return recs, trace
+    return examples, trace
 
 
 def main():
@@ -164,7 +162,11 @@ def main():
     ap.add_argument("--refresh", action="store_true")
     ap.add_argument("--limit", type=int, default=0)
     a = ap.parse_args()
-    recs, trace = build(a.refresh, a.limit)
+    examples, trace = build(a.refresh, a.limit)
+    recs = [build_record(example) for example in examples]
+    invalid = [validate(record) for record in recs if validate(record)]
+    if invalid:
+        raise ValueError(f"canonical flywheel examples emitted invalid ChatML: {invalid[:3]}")
     n = write_jsonl(recs, OUT)
     os.makedirs(SCALED, exist_ok=True)
     json.dump(trace, open(TRACE, "w"), indent=1, ensure_ascii=False)

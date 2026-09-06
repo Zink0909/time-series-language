@@ -349,7 +349,7 @@ def build_commodity(c, refresh=False, offline=False, cache_only=False, style="si
     pool = _pool(c, salient, refresh, offline)
     outcome_re = _outcome_re(c["nouns"])
     noun_re = re.compile(c["nouns"], re.I)
-    recs, trace = [], []
+    examples, trace = [], []
     for e in salient:
         d = e["date"]
         t = {"commodity": c["key"], "date": d, "ret": e["ret"], "emitted": False, "reason": ""}
@@ -390,16 +390,10 @@ def build_commodity(c, refresh=False, offline=False, cache_only=False, style="si
                   "flywheel": True, "text_synthesized_from": "gdelt_headlines"},
             text_source="flywheel_gdelt_synth", is_generated="derived_generated",
             knowledge_time=_knowledge_time(arts))
-        rec = build_record(ex)
-        errs = validate(rec)
-        if errs:
-            t["reason"] = f"schema_invalid: {errs}"
-            trace.append(t)
-            continue
-        recs.append(rec)
+        examples.append(ex)
         t.update({"emitted": True, "cause": cause, "articles": arts[:3]})
         trace.append(t)
-    return recs, trace
+    return examples, trace
 
 
 def main():
@@ -417,9 +411,9 @@ def main():
     style = "multi" if a.rich else "single"
     outfile = "flywheel_commodity_rich.jsonl" if a.rich else "flywheel_commodity.jsonl"
     todo = [c for c in COMMODITIES if not a.only or c["key"] == a.only]
-    all_recs, all_trace = [], []
+    all_examples, all_trace = [], []
     for c in todo:
-        recs, trace = build_commodity(c, a.refresh_retrieval, a.offline, a.frozen, style)
+        examples, trace = build_commodity(c, a.refresh_retrieval, a.offline, a.frozen, style)
         got = sum(1 for t in trace if t["emitted"])
         gaps = {}
         for t in trace:
@@ -427,8 +421,12 @@ def main():
                 gaps[t["reason"]] = gaps.get(t["reason"], 0) + 1
         print(f"  {c['key']:8s}: {got}/{len(trace)} events emitted"
               + (f"  gaps={gaps}" if gaps else ""))
-        all_recs += recs
+        all_examples += examples
         all_trace += trace
+    all_recs = [build_record(example) for example in all_examples]
+    invalid = [validate(record) for record in all_recs if validate(record)]
+    if invalid:
+        raise ValueError(f"canonical flywheel examples emitted invalid ChatML: {invalid[:3]}")
     n = write_jsonl(all_recs, os.path.join(PKG, "out", outfile))
     tracefile = "_trace_commodity_rich.json" if a.rich else "_trace_commodity.json"
     json.dump(all_trace, open(os.path.join(RAW, tracefile), "w"), indent=1)

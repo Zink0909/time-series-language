@@ -3,7 +3,12 @@
 # retry -> caller-supplied fallback. Only verified text is returned as generated.
 # Standard from the reference papers: HORAI/MM-TS (2602.05646) consistency filtering +
 # From-News-to-Forecast (2409.17515) reflection loop.
+import logging
+
 from core.verify import is_consistent, year_value_errors
+
+LOG = logging.getLogger(__name__)
+_UNAVAILABLE_WARNED = False
 
 _STRICTER = ("\n\nState ONLY numbers that appear in the facts above; introduce no other figures.")
 
@@ -25,6 +30,8 @@ def grounded_describe(system, user, values, grounding_text="", fallback=None,
     # Steer away from meta-phrasing ("This dataset tracks…") across every source.
     system = system + (" Describe the subject directly; never write 'this dataset', 'this series', "
                        "'the data', or similar meta-references.")
+    global _UNAVAILABLE_WARNED
+    rejected = 0
     try:
         from core.compress import complete
         for k in range(attempts):
@@ -32,8 +39,13 @@ def grounded_describe(system, user, values, grounding_text="", fallback=None,
                             temperature=temperature)
             if desc and good(desc):
                 return desc, "derived_generated", True
-    except Exception:
-        pass
+            rejected += 1
+    except Exception as exc:
+        if not _UNAVAILABLE_WARNED:
+            LOG.warning("grounded generation unavailable; using deterministic fallbacks: %s", exc)
+            _UNAVAILABLE_WARNED = True
+    if rejected:
+        LOG.warning("grounded generation rejected %d candidate(s) by numeric checks", rejected)
     if fallback is not None:
         text, tag = fallback
         return text, tag, True

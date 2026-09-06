@@ -2,9 +2,11 @@
 # core/chatml.py turns them into full Data-Schema training records (ChatML + z-score spans +
 # loss masks). Adapters never format ChatML or normalize directly.
 from dataclasses import dataclass, field
+from typing import Union
 from core import chatml
 
-BUILDER = "ts_lang_curation@0.2"   # 0.2 = full Data-Schema (ChatML) output
+BUILDER = "ts_lang_curation@0.5"
+PAIR_SCHEMA_VERSION = "pair@1"
 
 
 @dataclass
@@ -34,9 +36,13 @@ class TextToTs:
     knowledge_time: str = ""
 
 
+Pair = Union[TsToText, TextToTs]
+
+
 def _prov(ex, base):
     m = dict(base)
     m["builder"] = BUILDER
+    m["pair_schema_version"] = PAIR_SCHEMA_VERSION
     m["text_source"] = ex.text_source
     m["text_quality"] = "real" if ex.is_generated == "real" else "derived"
     m["is_generated_text"] = ex.is_generated
@@ -46,21 +52,9 @@ def _prov(ex, base):
 
 
 def build_record(ex):
-    if isinstance(ex, TsToText):
-        return chatml.build_text_desc(ex.user_intro, ex.series, ex.answer, _prov(ex, ex.meta))
-    if isinstance(ex, TextToTs):
-        # text<->series coupling (world-knowledge quality dim) — stamped CENTRALLY so every text->ts
-        # source carries it: a standing bio scores 'weak', an event-grounded cause 'coupled'.
-        from core.match_score import match_score                       # local import: avoid any cycle
-        meta = _prov(ex, ex.meta)
-        cause = ex.user_text
-        for cut in ("\n(history=", "Given this background", " Given this", " Given the"):
-            cause = cause.split(cut)[0]
-        ms, ml, _ = match_score(cause.strip(), ex.meta.get("event_date") or ex.meta.get("spike_date"))
-        meta["text_ts_match"], meta["text_ts_match_score"] = ml, ms
-        return chatml.build_ts_forecast(ex.user_text, ex.history, ex.future, ex.series_name,
-                                        ex.unit, ex.freq, meta, covariates=ex.covariates)
-    raise TypeError(f"unknown example type: {type(ex)}")
+    """Backward-compatible ChatML entry point; new code should use core.emitters.emit."""
+    from core.emitters import emit_chatml
+    return emit_chatml(ex)
 
 
 def validate(rec):

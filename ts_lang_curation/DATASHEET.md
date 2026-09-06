@@ -2,7 +2,13 @@
 
 Per-source documentation for the curated time-series ↔ text records. One section per source.
 
-**Output format = full Data-Schema (ChatML) records** (per `references/Data Schema.docx`): a Qwen
+> **Status notice (2026-09-06):** per-source counts below are historical snapshots and can differ
+> from a regenerated `out/`. Use build manifests plus `verify_any.py --profile release --strict`
+> for release claims. Existing files in `out/` predate the central governance stamps and are not
+> release artifacts; rebuild them before applying the release profile.
+
+**Canonical format = `pair@1` IR; training outputs = peer ChatML or CPT emitters.** ChatML follows
+`references/Data Schema.docx`: a Qwen
 ChatML transcript with `<stats>len,mean,std</stats> <ts></ts>` prompt spans, z-score-normalized
 `timeseries` spans (`raw = z*std + mean`), a `normalization` block, and loss masks. Each pair maps
 to a task contract: **ts→text → `text_desc`** (loss on the assistant text), **text→ts →
@@ -11,7 +17,7 @@ to a task contract: **ts→text → `text_desc`** (loss on the assistant text), 
 
 ---
 
-## Source: `fred_fomc`  (ACTIVE — ours)
+## Source: `treasury_fomc`  (ACTIVE — ours)
 
 **Motivation.** Pair official U.S. monetary-policy language with the market's interest-rate
 reaction, so the model learns real text ↔ time-series alignment and macro world knowledge.
@@ -40,21 +46,28 @@ the series is kept whole and loss is computed only on the post-decision future, 
 is conditioning-safe by construction (no series trimming, no custom cutoff field).
 
 **Sources & license.**
-- Text: Federal Reserve FOMC statements, federalreserve.gov (public domain). Per-record `text_url`.
-- Series: FRED `DGS2` (2y) + `DGS10` (10y covariate), public. Per-record `ts_url`.
+- Text: Federal Reserve FOMC statements. Per-record `text_url`.
+- Series: U.S. Treasury Daily Treasury Par Yield Curve XML feed, 2-year plus 10-year covariate.
+  Per-record `ts_url`; `series_provider=US_TREASURY`.
+- **Release status: approved.** The replacement cache was downloaded from the first-party Treasury
+  feed. Across all 4,623 dates overlapping the old FRED cache, both maturities matched exactly;
+  the old `fred_fomc` artifacts remain blocked and are not part of the release candidate.
 
 **Collection / preprocessing.**
 - FOMC statements fetched per meeting, body extracted (paragraphs between the release line and
-  the voting roster). FRED `DGS2` fetched once (2018–2025) and windowed per meeting; weekend/
-  holiday blanks dropped. Cached under `raw/` for reproducibility. Build: `python build.py --source fred_fomc`.
+  the voting roster). Treasury `BC_2YEAR` and `BC_10YEAR` observations are parsed from the annual
+  XML feeds and windowed per meeting; missing market days are dropped. Cached under `raw/` for
+  reproducibility. Build:
+  `python build.py --source treasury_fomc`.
 
 **Known limitations / TODO.**
 - `ts→text` text is **Qwen-generated** (grounded + every stated number machine-verified against
   the series). Tagged `derived_generated` and down-weightable — not native text.
-- `DGS2`/`DGS10` are yields (not revised), so no ALFRED vintage needed; revised macro series would.
+- The 2-year/10-year Treasury yields are not revised, so no vintage store is needed; revised macro
+  series would require one.
 
 **Provenance fields on every record.** `builder`, `source`, `series_id`, `fred_series`,
-`event_date`, `text_source`, `text_url`, `ts_url`, `knowledge_time` (text→ts).
+`event_date`, `text_source`, `text_url`, `ts_url`, `series_provider`, `knowledge_time` (text→ts).
 
 ---
 
@@ -78,7 +91,9 @@ with management's narrative.
 **Sources & license.**
 - Series: SEC EDGAR XBRL `companyconcept` / `companyfacts` (`us-gaap` revenue), public, no key.
   Per-record `ts_url` (companyfacts API), `cik`.
-- Text: the company's 10-K (MD&A), federal filing, public domain. Per-record `text_url` (filing).
+- Text: the company's 10-K (MD&A), a public EDGAR filing. SEC states EDGAR public filing content is
+  free to access and reuse; this is recorded as `LicenseRef-SEC-Free-Reuse`, not mislabeled as
+  public domain. Per-record `text_url` (filing).
 - SEC fair-access requires a descriptive `User-Agent` when fetching (set at fetch time, cached).
 
 **Collection / preprocessing.**
@@ -86,7 +101,7 @@ with management's narrative.
   deduped by fiscal-year-end, last 7 years, scaled to USD billions.
 - 10-K HTML fetched per company; MD&A located (last "Management's Discussion and Analysis"),
   revenue-driver sentences extracted (state a change + a reason). Cached under `raw/sec/`.
-- `ts→text` description passes the same numeric reflection check as `fred_fomc`
+- `ts→text` description passes the shared numeric reflection check
   (`core/verify.py` via `core/generate.py`); only verified text cached in `raw/sec/s2t/`.
 
 **Known limitations / TODO.**
@@ -181,8 +196,10 @@ when the CVE becomes actively exploited) paired with the CVE's official text. Ne
   numerically-verified description of how the exploitation risk evolved. 80/80 verified.
 
 **Sources & license.**
-- Text + series: **CISA KEV** (`cisa.gov`, public domain) + **FIRST EPSS** API
-  (`api.first.org`), both public, no key. Per-record `cve`, NVD `text_url`, KEV `ts_url`.
+- Text + series: **CISA KEV** + **FIRST EPSS** API (`api.first.org`), no key. FIRST says EPSS is
+  free to use and requests attribution but does not publish a standard SPDX license for the scores;
+  therefore this composite is `conditional` and must retain CISA/FIRST attribution. Per-record
+  `cve`, NVD `text_url`, KEV `ts_url`.
 
 **Collection / preprocessing.**
 - Take the most recently-added KEV CVEs; for each, fetch the EPSS 30-day time-series (scaled to

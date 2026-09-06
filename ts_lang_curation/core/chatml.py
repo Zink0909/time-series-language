@@ -11,6 +11,7 @@
 # Everything here follows the doc: ChatML transcript, prompt-side <stats>len,mean,std</stats>
 # <ts></ts>, bare assistant <ts></ts>, z-score spans (raw = z*std+mean), context-stats-for-
 # assistant-targets normalization, and char-range text loss. Alignment-stage empty <think>.
+import math
 from statistics import mean as _mean, pstdev as _pstdev
 
 # Low-variance robust scaler (the team's online normalization, per Xinyue 2026-06-29):
@@ -18,6 +19,7 @@ from statistics import mean as _mean, pstdev as _pstdev
 # can't explode the horizon: std_eff = max(raw_std, ROBUST_COEF * max(|mean|, 1.0)).
 ROBUST_COEF = 1e-3
 STD_FLOOR = ROBUST_COEF        # reported in the normalization block
+CHATML_SCHEMA_VERSION = "chatml-ts@1"
 SYS_FORECAST = "You are a helpful assistant specialized in time-series forecasting."
 SYS_UNDERSTAND = "You are a helpful assistant specialized in time-series understanding."
 
@@ -29,6 +31,10 @@ def _fmt(x):
 def _z(raw):
     """Return (z_values, mean, std_eff, std_floor_applied) using the robust context-window scaler:
     std_eff = max(raw_std, ROBUST_COEF * max(|mean|, 1.0))."""
+    if not isinstance(raw, (list, tuple)) or not raw:
+        raise ValueError("time-series values must be a non-empty list")
+    if any(isinstance(x, bool) or not isinstance(x, (int, float)) or not math.isfinite(x) for x in raw):
+        raise ValueError("time-series values must all be finite numbers")
     m = _mean(raw)
     s = _pstdev(raw)
     floor = ROBUST_COEF * max(abs(m), 1.0)
@@ -67,7 +73,8 @@ def build_text_desc(user_intro, series, answer, meta):
             f"<|im_start|>assistant\n<think>\n</think>\n\n")
     a0 = len(head)
     text = head + answer + "<|im_end|>\n"
-    rec = {"text": text, "timeseries": spans, "task_type": "text_desc",
+    rec = {"schema_version": CHATML_SCHEMA_VERSION,
+           "text": text, "timeseries": spans, "task_type": "text_desc",
            "text_loss_char_ranges": [[a0, a0 + len(answer)]],
            "normalization": {"method": "zscore", "scope": "context_stats_for_assistant_targets",
                              "num_spans": len(norm_spans), "std_floor": STD_FLOOR, "spans": norm_spans}}
@@ -79,6 +86,10 @@ def build_ts_forecast(user_text, history, future, series_name, unit, freq, meta,
     """text -> ts. history/future = raw lists; loss only on the future suffix of the target."""
     covariates = covariates or []
     H, F = len(history), len(future)
+    if H < 2:
+        raise ValueError("forecast history must contain at least two values")
+    if F < 1:
+        raise ValueError("forecast future must contain at least one value")
     # primary history (context) uses its own visible stats; target reuses them.
     hist_z, m, sd, applied = _z(history)
     hist_z = [round(v, 6) for v in hist_z]
@@ -112,7 +123,8 @@ def build_ts_forecast(user_text, history, future, series_name, unit, freq, meta,
             f"<|im_start|>user\n{user}<|im_end|>\n"
             f"<|im_start|>assistant\n<think>\n</think>\n\n<ts></ts><|im_end|>\n")
     task = "ts_forecast_covariates" if covariates else "ts_forecast"
-    rec = {"text": text, "timeseries": spans, "task_type": task, "text_loss_char_ranges": [],
+    rec = {"schema_version": CHATML_SCHEMA_VERSION,
+           "text": text, "timeseries": spans, "task_type": task, "text_loss_char_ranges": [],
            "normalization": {"method": "zscore", "scope": "context_stats_for_assistant_targets",
                              "num_spans": len(norm_spans), "std_floor": STD_FLOOR, "spans": norm_spans}}
     rec.update(meta)
@@ -122,35 +134,73 @@ def build_ts_forecast(user_text, history, future, series_name, unit, freq, meta,
 def validate(rec):
     """Schema invariants. Returns list of problems ([] == ok)."""
     errs = []
-    n_ph = rec["text"].count("<ts></ts>")
-    ts = rec["timeseries"]
+    if not isinstance(rec, dict):
+        return ["record must be an object"]
+    text = rec.get("text")
+    ts = rec.get("timeseries")
+    if not isinstance(text, str) or not text:
+        errs.append("text missing/empty")
+        text = ""
+    if not isinstance(ts, list) or not ts:
+        errs.append("timeseries missing/empty")
+        ts = []
+    n_ph = text.count("<ts></ts>")
     if n_ph != len(ts):
         errs.append(f"<ts></ts> count {n_ph} != timeseries {len(ts)}")
     for i, s in enumerate(ts):
+        if not isinstance(s, dict):
+            errs.append(f"span[{i}] must be an object")
+            continue
         v = s.get("values", [])
+        if not isinstance(v, list) or not v:
+            errs.append(f"span[{i}] values missing/empty")
+            continue
         if len(v) != s.get("len"):
             errs.append(f"span[{i}] len {s.get('len')} != values {len(v)}")
-        if any((x != x) for x in v):
-            errs.append(f"span[{i}] NaN")
+        if any(isinstance(x, bool) or not isinstance(x, (int, float)) or not math.isfinite(x) for x in v):
+            errs.append(f"span[{i}] has non-finite or non-numeric values")
+        if s.get("role") not in {"context", "target", "observed", "covariate"}:
+            errs.append(f"span[{i}] invalid role {s.get('role')!r}")
+        ls = s.get("loss_start")
+        if not isinstance(ls, int) or not 0 <= ls <= len(v):
+            errs.append(f"span[{i}] invalid loss_start {ls!r}")
     # forecast: first H of target must equal context exactly (normalized)
-    if rec["task_type"].startswith("ts_forecast"):
-        tgt = next((s for s in ts if s["role"] == "target"), None)
+    task_type = rec.get("task_type", "")
+    if task_type.startswith("ts_forecast"):
+        tgt = next((s for s in ts if isinstance(s, dict) and s.get("role") == "target"), None)
         if tgt:
             ci = tgt.get("context_span_idx", 0)
-            H = ts[ci]["len"]
-            if tgt["values"][:H] != ts[ci]["values"]:
-                errs.append("target history prefix != context span")
-            if tgt["loss_start"] != H:
-                errs.append(f"target loss_start {tgt['loss_start']} != H {H}")
+            if not isinstance(ci, int) or not 0 <= ci < len(ts) or not isinstance(ts[ci], dict):
+                errs.append(f"target context_span_idx {ci!r} out of range")
+                ci = None
+            if ci is not None:
+                H = ts[ci].get("len", 0)
+                if tgt.get("values", [])[:H] != ts[ci].get("values", []):
+                    errs.append("target history prefix != context span")
+                if tgt.get("loss_start") != H:
+                    errs.append(f"target loss_start {tgt.get('loss_start')} != H {H}")
+        else:
+            errs.append("forecast row missing target span")
     # text_desc: must have a text loss range; forecast: must be empty
     tlr = rec.get("text_loss_char_ranges")
     if tlr is None:
         errs.append("missing text_loss_char_ranges")
-    elif rec["task_type"] == "text_desc" and not tlr:
+        tlr = []
+    elif not isinstance(tlr, list):
+        errs.append("text_loss_char_ranges must be a list")
+        tlr = []
+    elif task_type == "text_desc" and not tlr:
         errs.append("text_desc has empty text_loss_char_ranges")
-    elif rec["task_type"].startswith("ts_forecast") and tlr:
+    elif task_type.startswith("ts_forecast") and tlr:
         errs.append("forecast row should have empty text_loss_char_ranges")
     for r in (tlr or []):
-        if not (0 <= r[0] < r[1] <= len(rec["text"])):
+        if not (isinstance(r, list) and len(r) == 2 and all(isinstance(x, int) for x in r)
+                and 0 <= r[0] < r[1] <= len(text)):
             errs.append(f"bad text_loss range {r}")
+    norm = rec.get("normalization")
+    if not isinstance(norm, dict):
+        errs.append("missing normalization block")
+    elif (norm.get("num_spans") != len(ts) or not isinstance(norm.get("spans"), list)
+          or len(norm["spans"]) != len(ts)):
+        errs.append("normalization span count mismatch")
     return errs

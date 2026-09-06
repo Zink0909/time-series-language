@@ -70,7 +70,7 @@ def _long_pv(slug, refresh):
 
 def build(n_entities, refresh=False):
     slugs = collect_entities(n_entities, refresh)
-    recs, trace = [], []
+    examples, trace = [], []
     for k, slug in enumerate(slugs):
         series = _long_pv(slug, refresh)
         if len(series) < ws.HIST + ws.FUT:
@@ -107,15 +107,12 @@ def build(n_entities, refresh=False):
                       "flat_context": ws._flat(hist), "flywheel": True,
                       "text_url": f"https://en.wikipedia.org/w/index.php?oldid={rev['revid']}"},
                 text_source="wikipedia_lead_pit", is_generated="real", knowledge_time=rev["timestamp"])
-            rec = build_record(ex)
-            if validate(rec):
-                continue
-            recs.append(rec)
+            examples.append(ex)
             n_emit += 1
         trace.append({"slug": slug, "emitted": n_emit})
         if (k + 1) % 50 == 0:
-            print(f"  {k+1}/{len(slugs)} entities · {len(recs)} records so far", flush=True)
-    return recs, trace
+            print(f"  {k+1}/{len(slugs)} entities · {len(examples)} records so far", flush=True)
+    return examples, trace
 
 
 def main():
@@ -123,7 +120,11 @@ def main():
     ap.add_argument("--entities", type=int, default=600)
     ap.add_argument("--refresh", action="store_true")
     a = ap.parse_args()
-    recs, trace = build(a.entities, a.refresh)
+    examples, trace = build(a.entities, a.refresh)
+    recs = [build_record(example) for example in examples]
+    invalid = [validate(record) for record in recs if validate(record)]
+    if invalid:
+        raise ValueError(f"canonical flywheel examples emitted invalid ChatML: {invalid[:3]}")
     n = write_jsonl(recs, OUT)
     ent = sum(1 for t in trace if t.get("emitted", 0) > 0)
     print(f"flywheel_wiki_big: {n} text->ts from {ent}/{len(trace)} entities -> {OUT}")

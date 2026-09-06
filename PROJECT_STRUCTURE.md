@@ -15,18 +15,22 @@ references, raw caches, built data) is local-only and git-ignored — see `.giti
 
 ## 1. `ts_lang_curation/` — data pipeline + verification
 
-Builds ChatML text↔time-series records (schema in `DATASHEET.md`) from first-party sources and
+Builds canonical text↔time-series Pairs plus peer ChatML/CPT outputs from first-party sources and
 from an automated "flywheel", then verifies whether the paired text actually carries value.
 
 ```
-build.py                     # CLI: python build.py --source <name>
+build.py                     # CLI: source -> IR / ChatML / CPT, manifests, rejection ledgers
 core/                        # shared engine (one schema, reused by every source)
-  schema.py  chatml.py       #   record dataclasses; ChatML assembly + z-norm + loss masks + validate
-  compress.py generate.py    #   LLM calls (endpoint/key/model via env vars — never hardcoded)
+  schema.py ir.py            #   Pair dataclasses; lossless canonical serialization
+  emitters.py chatml.py      #   peer outputs; ChatML z-norm + loss masks + validation
+  governance.py              #   source-license policy and fail-closed release decisions
+  compress.py generate.py    #   LLM calls (endpoint required via env; observable fallback)
   verify.py  faithfulness.py #   numeric reflection; entity-tracing faithfulness gate
   detect.py  retrieval_rank.py leak_screen.py match_score.py writer.py
 sources/                     # one thin adapter per source (core untouched when adding one)
-  fred_fomc.py sec_edgar.py cyber_epss.py usgs_quakes.py wiki_pageviews.py fnspid.py
+  treasury_fomc.py sec_edgar.py cyber_epss.py usgs_quakes.py wiki_pageviews.py fnspid.py
+  flywheel_*.py             # flywheel Pair adapters for the same unified build CLI
+governance/                  # reviewed source-license registry
 flywheel/                    # automated engine: series -> detect -> retrieve -> annotate -> gate -> emit
   oil_demo.py wiki_demo.py wiki_scale.py commodity_demo.py bq_pool.py
   audit_*.py                 #   independent QA/leakage/faithfulness audits (don't trust validate())
@@ -36,11 +40,12 @@ flywheel/                    # automated engine: series -> detect -> retrieve ->
     data.py arms.py models.py run.py     # the 3-arm A/B/C harness (no-text / correct / shuffled)
     discriminator.py migas_finetune.py source_registry.py
     verify_*.py export_*.py colab_*.py   # robustness battery + base-model export/probes
-scripts/regress.py           # minimum regression (build 2 sources + replay flywheel + audits)
+scripts/regress.py           # integration smoke test (build 2 sources + replay flywheel + audits)
+tests/                       # dependency-free unit/invariant tests
 dev/                         # small dev-set samples (the shipped data; full out/ is git-ignored)
 ```
 
-Run: `micromamba run -n ts-language python build.py --source fred_fomc`
+Run: `micromamba run -n ts-language python build.py --source treasury_fomc`
 Regression: `micromamba run -n ts-language python scripts/regress.py`
 
 ## 2. `forecastbench_eval/` — ForecastBench analysis
@@ -63,6 +68,6 @@ Reproduce the analysis (no GPU): `python analyze_domain_edge.py`
 
 ## Not in the repo (git-ignored, local only)
 
-`raw/` `.cache/` (downloads) · `out/` (built jsonl) · `reports/` `notion_pages/` `dev_set_review/`
+`raw/` `.cache/` (downloads) · `out/` (built jsonl + manifests) · `reports/` `notion_pages/` `dev_set_review/`
 (local write-ups) · `references/` (papers) · `scratchpad/` (backups) · `discord_exports/` &
 `CLAUDE.md` (team-internal) · `**/_*.json` (regenerable verification caches) · `__pycache__/`.
